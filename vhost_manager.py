@@ -573,7 +573,7 @@ class ApacheVHostManager:
         
         print(f"🗑️  Deleting Virtual Host {domain}...")
         
-        # Disable the site
+        # Disable the site 
         self.run_command(f"a2dissite {domain}.conf")
         
         # Remove configuration file

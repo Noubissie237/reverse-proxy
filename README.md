@@ -56,7 +56,7 @@ This command:
 
 ## 🎯 Usage
 
-### 3. Check DNS Configuration
+### 3. Check DNS Configuration (RECOMMENDED)
 
 ```bash
 python3 check_dns.py <domain>
@@ -119,6 +119,7 @@ sudo python3 vhost_manager.py create shop.com 3000
 
 ```bash
 # API on port 8080
+sudo python3 check_dns.py api.myapp.com
 sudo python3 vhost_manager.py create api.myapp.com 8080
 ```
 
@@ -126,6 +127,7 @@ sudo python3 vhost_manager.py create api.myapp.com 8080
 
 ```bash
 # React app in development on port 3000
+sudo python3 check_dns.py app.example.com
 sudo python3 vhost_manager.py create app.example.com 3000
 ```
 
@@ -185,6 +187,7 @@ sudo tail -f /var/log/apache2/mysite.com-ssl-error.log
 2. **Wait for DNS propagation** (few minutes to few hours)
 3. **Create the Virtual Host**:
    ```bash
+   sudo python3 check_dns.py newsite.com
    sudo python3 vhost_manager.py create newsite.com 8080
    ```
 4. **Test**: Navigate to `https://newsite.com`
@@ -428,11 +431,13 @@ If you encounter issues or have questions:
 
 **💡 Pro Tip:** Add this alias to your `.bashrc` for easier usage:
 ```bash
+alias check_dns='sudo python3 /path/to/check_dns.py'
 alias vhost='sudo python3 /path/to/vhost_manager.py'
 ```
 
 Then simply use:
 ```bash
+check_dns mysite.com
 vhost create mysite.com 8080
 vhost list
 vhost delete mysite.com
