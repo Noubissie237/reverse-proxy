@@ -2,11 +2,12 @@
 
 import sys
 import os
-import subprocess
 import json
 import logging
-import socket
+import subprocess
 import re
+import socket
+import requests
 from pathlib import Path
 from datetime import datetime
 
@@ -332,6 +333,24 @@ class ApacheVHostManager:
         except Exception:
             return True  # Assume available if check fails
     
+    def check_domain_dns(self, domain):
+        """
+        Check if domain DNS points to current server
+        
+        Args:
+            domain (str): Domain name to check
+            
+        Returns:
+            bool: True if DNS points to current server, False otherwise
+        """
+        try:
+            current_ip = requests.get('https://api.ipify.org').text
+            domain_ip = socket.gethostbyname(domain)
+            return domain_ip == current_ip
+        except Exception as e:
+            logger.error(f"Failed to check domain DNS: {e}")
+            return False
+    
     def install_ssl_certificate(self, domain):
         """
         Install SSL certificate using Let's Encrypt
@@ -351,8 +370,51 @@ class ApacheVHostManager:
                 print("❌ Failed to install Certbot")
                 return False
         
+        # Check if domain DNS points to current server
+        print("🔍 Checking domain DNS configuration...")
+        if not self.check_domain_dns(domain):
+            print(f"⚠️  Warning: Domain {domain} may not point to this server")
+            print("💡 Make sure your DNS A record points to this server's IP address")
+            response = input("Continue with SSL installation anyway? (y/n): ")
+            if response.lower() != 'y':
+                return False
+        
+        # Create temporary HTTP-only virtual host for Let's Encrypt challenge
+        print("🔧 Creating temporary HTTP configuration for Let's Encrypt verification...")
+        temp_config = f"""<VirtualHost *:80>
+    ServerName {domain}
+    ServerAlias www.{domain}
+    
+    # Document root for Let's Encrypt challenges
+    DocumentRoot /var/www/html
+    
+    # Allow .well-known directory for Let's Encrypt
+    <Directory "/var/www/html/.well-known">
+        AllowOverride None
+        Require all granted
+    </Directory>
+    
+    # Logging
+    ErrorLog ${{APACHE_LOG_DIR}}/{domain}-error.log
+    CustomLog ${{APACHE_LOG_DIR}}/{domain}-access.log combined
+</VirtualHost>"""
+        
+        temp_config_path = f"/etc/apache2/sites-available/{domain}-temp.conf"
+        try:
+            with open(temp_config_path, 'w') as f:
+                f.write(temp_config)
+            
+            # Disable existing site and enable temporary one
+            self.run_command(f"a2dissite {domain}.conf", show_output=False)
+            self.run_command(f"a2ensite {domain}-temp.conf")
+            self.run_command("systemctl reload apache2")
+            
+        except Exception as e:
+            print(f"❌ Failed to create temporary configuration: {e}")
+            return False
+        
         # Get SSL certificate
-        certbot_cmd = f"certbot --apache -d {domain} -d www.{domain} --non-interactive --agree-tos --redirect"
+        certbot_cmd = f"certbot --apache -d {domain} -d www.{domain} --non-interactive --agree-tos"
         
         # Handle email configuration
         email_file = "/etc/letsencrypt/.email"
@@ -368,7 +430,15 @@ class ApacheVHostManager:
                 email = f.read().strip()
             certbot_cmd += f" --email {email}"
         
-        if self.run_command(certbot_cmd, show_output=True):
+        # Run certbot
+        success = self.run_command(certbot_cmd, show_output=True)
+        
+        # Clean up temporary configuration
+        self.run_command(f"a2dissite {domain}-temp.conf", show_output=False)
+        if os.path.exists(temp_config_path):
+            os.remove(temp_config_path)
+        
+        if success:
             print("✅ SSL certificate installed successfully!")
             print("🔄 Automatic renewal is configured")
             logger.info(f"SSL certificate installed for {domain}")
@@ -376,6 +446,7 @@ class ApacheVHostManager:
         else:
             print("❌ Failed to install SSL certificate")
             print("💡 Make sure your DNS points to this server and port 80/443 are accessible")
+            print("💡 Verify that your domain actually resolves to this server's IP address")
             logger.error(f"SSL certificate installation failed for {domain}")
             return False
     
@@ -445,7 +516,24 @@ class ApacheVHostManager:
                 response = input("🔒 Install SSL certificate with Let's Encrypt? (y/n): ")
                 if response.lower() == 'y':
                     ssl_success = self.install_ssl_certificate(domain)
-            
+                    
+                    # If SSL was successful, recreate the virtual host with proper SSL configuration
+                    if ssl_success:
+                        print("🔧 Updating virtual host configuration with SSL...")
+                        # Disable current site
+                        self.run_command(f"a2dissite {domain}.conf", show_output=False)
+                        
+                        # Recreate config with SSL enabled
+                        new_config_path = self.create_vhost_config(domain, port_num, True)
+                        if new_config_path:
+                            # Enable the updated site
+                            self.run_command(f"a2ensite {domain}")
+                            self.run_command("systemctl reload apache2")
+                            print("✅ SSL configuration updated!")
+                        else:
+                            print("⚠️  Warning: Failed to update SSL configuration")
+                else:
+                    ssl = False
             # Save configuration
             self.sites[domain] = {
                 'port': port_num,
@@ -486,7 +574,7 @@ class ApacheVHostManager:
         print(f"🗑️  Deleting Virtual Host {domain}...")
         
         # Disable the site
-        self.run_command(f"a2dissite {domain}")
+        self.run_command(f"a2dissite {domain}.conf")
         
         # Remove configuration file
         config_file = self.sites[domain]['config_file']

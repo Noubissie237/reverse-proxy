@@ -34,9 +34,13 @@ wget https://raw.githubusercontent.com/Noubissie237/reverse-proxy/main/vhost_man
 # Download the SSL setup script
 wget https://raw.githubusercontent.com/Noubissie237/reverse-proxy/main/setup_ssl.sh
 
+# Download the DNS checker script
+wget https://raw.githubusercontent.com/Noubissie237/reverse-proxy/main/check_dns.py
+
 # Make scripts executable
 chmod +x setup_ssl.sh
 chmod +x vhost_manager.py
+chmod +x check_dns.py
 ```
 
 ### 2. Initial SSL configuration (one time only)
@@ -52,7 +56,13 @@ This command:
 
 ## 🎯 Usage
 
-### Create a new site
+### 3. Check DNS Configuration
+
+```bash
+python3 check_dns.py <domain>
+```
+
+### 4. Create a new site
 
 ```bash
 sudo python3 vhost_manager.py create <domain> <port>
