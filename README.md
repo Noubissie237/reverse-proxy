@@ -40,13 +40,27 @@ wget https://raw.githubusercontent.com/Noubissie237/reverse-proxy/main/setup_ssl
 # Télécharger le script de vérification DNS
 wget https://raw.githubusercontent.com/Noubissie237/reverse-proxy/main/check_dns.py
 
+# Télécharger le fichier des dépendances
+wget https://raw.githubusercontent.com/Noubissie237/reverse-proxy/main/requirements.txt
+
 # Rendre les scripts exécutables
 chmod +x setup_ssl.sh
 chmod +x vhost_manager.py
 chmod +x check_dns.py
 ```
 
-### 2. Configuration SSL initiale (une seule fois)
+### 2. Installer les dépendances Python
+
+```bash
+# Installer les dépendances requises
+pip3 install -r requirements.txt
+```
+
+Cette commande installe :
+- `requests` : Pour les requêtes HTTP
+- `email-validator` : Pour la validation des emails
+
+### 3. Configuration SSL initiale (une seule fois)
 
 ```bash
 sudo ./setup_ssl.sh
@@ -59,13 +73,13 @@ Cette commande :
 
 ## 🎯 Utilisation
 
-### 3. Vérifier la configuration DNS (RECOMMANDÉ)
+### 4. Vérifier la configuration DNS (RECOMMANDÉ)
 
 ```bash
 python3 check_dns.py <domaine>
 ```
 
-### 4. Créer un nouveau site
+### 5. Créer un nouveau site
 
 ```bash
 sudo python3 vhost_manager.py create <domaine> <port>
@@ -492,13 +506,27 @@ wget https://raw.githubusercontent.com/Noubissie237/reverse-proxy/main/setup_ssl
 # Download the DNS checker script
 wget https://raw.githubusercontent.com/Noubissie237/reverse-proxy/main/check_dns.py
 
+# Download the requirements file
+wget https://raw.githubusercontent.com/Noubissie237/reverse-proxy/main/requirements.txt
+
 # Make scripts executable
 chmod +x setup_ssl.sh
 chmod +x vhost_manager.py
 chmod +x check_dns.py
 ```
 
-### 2. Initial SSL configuration (one time only)
+### 2. Install Python dependencies
+
+```bash
+# Install required dependencies
+pip3 install -r requirements.txt
+```
+
+This installs:
+- `requests`: For HTTP requests
+- `email-validator`: For email validation
+
+### 3. Initial SSL configuration (one time only)
 
 ```bash
 sudo ./setup_ssl.sh
@@ -511,13 +539,13 @@ This command:
 
 ## 🎯 Usage
 
-### 3. Check DNS Configuration (RECOMMENDED)
+### 4. Check DNS Configuration (RECOMMENDED)
 
 ```bash
 python3 check_dns.py <domain>
 ```
 
-### 4. Create a new site
+### 5. Create a new site
 
 ```bash
 sudo python3 vhost_manager.py create <domain> <port>

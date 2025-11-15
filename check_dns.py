@@ -12,6 +12,9 @@ def get_server_ip():
     try:
         response = requests.get('https://api.ipify.org', timeout=10)
         return response.text.strip()
+    except requests.Timeout:
+        print(f"❌ Timeout while getting server IP (network may be slow)")
+        return None
     except Exception as e:
         print(f"❌ Failed to get server IP: {e}")
         return None
@@ -19,9 +22,18 @@ def get_server_ip():
 def get_domain_ip(domain):
     """Get IP address that domain resolves to"""
     try:
-        return socket.gethostbyname(domain)
+        # Set timeout for DNS resolution
+        socket.setdefaulttimeout(10)
+        ip = socket.gethostbyname(domain)
+        socket.setdefaulttimeout(None)  # Reset to default
+        return ip
+    except socket.timeout:
+        print(f"❌ Timeout while resolving {domain} (DNS may be slow)")
+        socket.setdefaulttimeout(None)  # Reset to default
+        return None
     except Exception as e:
         print(f"❌ Failed to resolve {domain}: {e}")
+        socket.setdefaulttimeout(None)  # Reset to default
         return None
 
 def get_both_domains(input_domain):

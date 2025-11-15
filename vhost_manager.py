@@ -10,6 +10,7 @@ import socket
 import requests
 from pathlib import Path
 from datetime import datetime
+from email_validator import validate_email, EmailNotValidError
 
 # Setup logging
 def setup_logging():
@@ -316,22 +317,24 @@ class ApacheVHostManager:
             print(f"❌ Invalid port format: {port}")
             return None
     
-    def check_port_available(self, port):
+    def check_port_in_use(self, port):
         """
-        Check if a port is available on localhost
+        Check if a port is currently in use on localhost
         
         Args:
             port (int): Port number to check
             
         Returns:
-            bool: True if port is available, False if in use
+            bool: True if port is in use (service running), False if available
         """
         try:
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                # connect_ex returns 0 if connection succeeds (port in use)
+                # returns non-zero if connection fails (port available)
                 result = s.connect_ex(('localhost', port))
-                return result != 0  # Port is available if connection fails
+                return result == 0  # Port is in use if connection succeeds
         except Exception:
-            return True  # Assume available if check fails
+            return False  # Assume available if check fails
     
     def check_domain_dns(self, domain):
         """
@@ -344,12 +347,72 @@ class ApacheVHostManager:
             bool: True if DNS points to current server, False otherwise
         """
         try:
-            current_ip = requests.get('https://api.ipify.org').text
+            # Add timeout to prevent hanging
+            current_ip = requests.get('https://api.ipify.org', timeout=10).text
+            # Set socket timeout for DNS resolution
+            socket.setdefaulttimeout(10)
             domain_ip = socket.gethostbyname(domain)
+            socket.setdefaulttimeout(None)  # Reset to default
             return domain_ip == current_ip
+        except requests.Timeout:
+            logger.error(f"Timeout while checking server IP")
+            return False
+        except socket.timeout:
+            logger.error(f"Timeout while resolving domain {domain}")
+            return False
         except Exception as e:
             logger.error(f"Failed to check domain DNS: {e}")
             return False
+    
+    def get_validated_email(self):
+        """
+        Get and validate email for Let's Encrypt
+        
+        Returns:
+            str: Validated email address
+        """
+        email_file = "/etc/letsencrypt/.email"
+        
+        # Check if email already saved
+        if os.path.exists(email_file):
+            try:
+                with open(email_file, 'r') as f:
+                    saved_email = f.read().strip()
+                    # Validate saved email
+                    valid = validate_email(saved_email)
+                    return valid.email
+            except Exception as e:
+                logger.warning(f"Saved email is invalid: {e}")
+                # Continue to ask for new email
+        
+        # Get new email with validation
+        print("📧 Let's Encrypt requires a valid email for:")
+        print("   • Certificate expiration notifications")
+        print("   • Security alerts")
+        print("   • Important updates")
+        print()
+        
+        while True:
+            email = input("Enter your email: ").strip()
+            
+            try:
+                # Validate and normalize email
+                valid = validate_email(email)
+                normalized_email = valid.email
+                
+                # Save for future use
+                os.makedirs(os.path.dirname(email_file), exist_ok=True)
+                with open(email_file, 'w') as f:
+                    f.write(normalized_email)
+                os.chmod(email_file, 0o644)
+                
+                logger.info(f"Email validated and saved: {normalized_email}")
+                return normalized_email
+                
+            except EmailNotValidError as e:
+                print(f"❌ Invalid email: {e}")
+                print("💡 Example: user@example.com")
+                print()
     
     def install_ssl_certificate(self, domain):
         """
@@ -416,19 +479,9 @@ class ApacheVHostManager:
         # Get SSL certificate
         certbot_cmd = f"certbot --apache -d {domain} -d www.{domain} --non-interactive --agree-tos"
         
-        # Handle email configuration
-        email_file = "/etc/letsencrypt/.email"
-        if not os.path.exists(email_file):
-            email = input("📧 Enter your email for Let's Encrypt notifications: ")
-            certbot_cmd += f" --email {email}"
-            # Save email for future use
-            os.makedirs(os.path.dirname(email_file), exist_ok=True)
-            with open(email_file, 'w') as f:
-                f.write(email)
-        else:
-            with open(email_file, 'r') as f:
-                email = f.read().strip()
-            certbot_cmd += f" --email {email}"
+        # Get validated email
+        email = self.get_validated_email()
+        certbot_cmd += f" --email {email}"
         
         # Run certbot
         success = self.run_command(certbot_cmd, show_output=True)
@@ -476,8 +529,8 @@ class ApacheVHostManager:
             if response.lower() != 'y':
                 return
         
-        # Warn if port is not responding
-        if not self.check_port_available(port_num):
+        # Check if port is in use
+        if self.check_port_in_use(port_num):
             print(f"💡 Service appears to be running on port {port_num}")
         else:
             print(f"⚠️  Warning: No service detected on port {port_num}")
