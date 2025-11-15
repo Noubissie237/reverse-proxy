@@ -29,26 +29,22 @@ Automatisez la création de Virtual Hosts Apache avec redirection HTTPS automati
 
 - **Serveur Linux** (Ubuntu/Debian recommandé)
 - **Apache2** installé et configuré
+- **Git** installé (`sudo apt install git`)
+- **Python 3.9+** avec pip
 - **Privilèges sudo**
 - **DNS configuré** (enregistrement A pointant vers votre serveur)
 - **Ports 80 et 443 ouverts** dans le pare-feu
 
 ## 📦 Installation
 
-### 1. Télécharger les scripts
+### 1. Cloner le dépôt
 
 ```bash
-# Télécharger le gestionnaire Python
-wget https://raw.githubusercontent.com/Noubissie237/reverse-proxy/main/manage.py
+# Cloner le dépôt GitHub
+git clone https://github.com/Noubissie237/reverse-proxy.git
 
-# Télécharger le script de configuration SSL
-wget https://raw.githubusercontent.com/Noubissie237/reverse-proxy/main/setup_ssl.sh
-
-# Télécharger le script de vérification DNS
-wget https://raw.githubusercontent.com/Noubissie237/reverse-proxy/main/check_dns.py
-
-# Télécharger le fichier des dépendances
-wget https://raw.githubusercontent.com/Noubissie237/reverse-proxy/main/requirements.txt
+# Accéder au répertoire
+cd reverse-proxy
 
 # Rendre les scripts exécutables
 chmod +x setup_ssl.sh
@@ -550,26 +546,22 @@ Automate the creation of Apache Virtual Hosts with automatic HTTPS redirect and 
 
 - **Linux Server** (Ubuntu/Debian recommended)
 - **Apache2** installed and configured
+- **Git** installed (`sudo apt install git`)
+- **Python 3.9+** with pip
 - **Sudo privileges**
 - **DNS configured** (A record pointing to your server)
 - **Ports 80 and 443 open** in firewall
 
 ## 📦 Installation
 
-### 1. Download the scripts
+### 1. Clone the repository
 
 ```bash
-# Download the Python manager
-wget https://raw.githubusercontent.com/Noubissie237/reverse-proxy/main/manage.py
+# Clone the GitHub repository
+git clone https://github.com/Noubissie237/reverse-proxy.git
 
-# Download the SSL setup script
-wget https://raw.githubusercontent.com/Noubissie237/reverse-proxy/main/setup_ssl.sh
-
-# Download the DNS checker script
-wget https://raw.githubusercontent.com/Noubissie237/reverse-proxy/main/check_dns.py
-
-# Download the requirements file
-wget https://raw.githubusercontent.com/Noubissie237/reverse-proxy/main/requirements.txt
+# Navigate to the directory
+cd reverse-proxy
 
 # Make scripts executable
 chmod +x setup_ssl.sh
