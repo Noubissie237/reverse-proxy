@@ -43,8 +43,10 @@ class TestEmailValidation:
 class TestPortValidation:
     """Test port validation"""
     
-    def test_valid_ports(self, mock_manager):
+    def test_valid_ports(self):
         """Test that valid ports are accepted"""
+        from vhost_manager.validation import validate_port
+        
         valid_ports = [
             ("80", 80),
             ("443", 443),
@@ -55,30 +57,36 @@ class TestPortValidation:
         ]
         
         for port_str, expected in valid_ports:
-            result = mock_manager.validate_port(port_str)
+            result = validate_port(port_str)
             assert result == expected
     
-    def test_invalid_ports(self, mock_manager):
+    def test_invalid_ports(self):
         """Test that invalid ports are rejected"""
+        from vhost_manager.validation import validate_port
+        
         invalid_ports = ["0", "65536", "-1", "abc", "12.34", ""]
         
         for port_str in invalid_ports:
-            result = mock_manager.validate_port(port_str)
+            result = validate_port(port_str)
             assert result is None
     
-    def test_port_range(self, mock_manager):
+    def test_port_range(self):
         """Test port range boundaries"""
-        assert mock_manager.validate_port("1") == 1
-        assert mock_manager.validate_port("65535") == 65535
-        assert mock_manager.validate_port("0") is None
-        assert mock_manager.validate_port("65536") is None
+        from vhost_manager.validation import validate_port
+        
+        assert validate_port("1") == 1
+        assert validate_port("65535") == 65535
+        assert validate_port("0") is None
+        assert validate_port("65536") is None
 
 
 class TestDomainValidation:
     """Test domain validation"""
     
-    def test_valid_domains(self, mock_manager):
+    def test_valid_domains(self):
         """Test that valid domains are accepted"""
+        from vhost_manager.validation import validate_domain
+        
         valid_domains = [
             "example.com",
             "subdomain.example.com",
@@ -89,10 +97,12 @@ class TestDomainValidation:
         ]
         
         for domain in valid_domains:
-            assert mock_manager.validate_domain(domain) is True
+            assert validate_domain(domain) is True
     
-    def test_invalid_domains(self, mock_manager):
+    def test_invalid_domains(self):
         """Test that invalid domains are rejected"""
+        from vhost_manager.validation import validate_domain
+        
         invalid_domains = [
             "-example.com",
             "example-.com",
@@ -104,15 +114,17 @@ class TestDomainValidation:
         ]
         
         for domain in invalid_domains:
-            assert mock_manager.validate_domain(domain) is False
+            assert validate_domain(domain) is False
     
-    def test_domain_length(self, mock_manager):
+    def test_domain_length(self):
         """Test domain length validation"""
+        from vhost_manager.validation import validate_domain
+        
         # Valid length (253 chars max)
         valid_domain = "a" * 63 + "." + "b" * 63 + "." + "c" * 63 + "." + "d" * 59
         assert len(valid_domain) <= 253
-        assert mock_manager.validate_domain(valid_domain) is True
+        assert validate_domain(valid_domain) is True
         
         # Invalid length (> 253 chars)
         invalid_domain = "a" * 254
-        assert mock_manager.validate_domain(invalid_domain) is False
+        assert validate_domain(invalid_domain) is False

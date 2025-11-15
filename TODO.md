@@ -52,12 +52,37 @@
    - Badge de version Python
    - Badge de licence
 
+## ✅ Améliorations terminées (v1.4.0 - Wildcard SSL)
+
+1. ✅ **Détection domaines wildcard** : Identification automatique des domaines `*.example.com`
+2. ✅ **Installation certificats wildcard** : Support DNS-01 challenge manuel
+3. ✅ **Commande dédiée** : `install-wildcard-ssl` pour installation séparée
+4. ✅ **Guide complet** : Documentation détaillée dans WILDCARD_SSL_GUIDE.md
+5. ✅ **Instructions interactives** : Guide pas-à-pas pendant l'installation
+6. ✅ **Support création site** : Wildcard détecté automatiquement lors de `create`
+
+## ✅ Améliorations terminées (v1.5.0 - Architecture Modulaire)
+
+1. ✅ **Refactoring modulaire** : Code séparé en 7 modules organisés
+   - `core.py` (308 lignes) - Classe principale
+   - `ssl.py` (243 lignes) - Gestion SSL
+   - `monitoring.py` (287 lignes) - Monitoring
+   - `validation.py` (151 lignes) - Validations
+   - `config.py` (71 lignes) - Configuration
+   - `utils.py` (69 lignes) - Utilitaires
+   - `__init__.py` (55 lignes) - Package
+
+2. ✅ **Nouveau script CLI** : `manage.py` remplace `vhost_manager.py`
+3. ✅ **Tests mis à jour** : 27/27 tests passent avec la nouvelle structure
+4. ✅ **Documentation** : README dans vhost_manager/ expliquant l'architecture
+5. ✅ **Rétrocompatibilité** : API publique inchangée
+
 ## Fonctionnalités à ajouter (Prochaines versions)
 
 ### Priorité Haute
-- **Support de sous-domaines wildcards** : Permettre la création de certificats wildcard (*.example.com)
-  - Nécessite validation DNS au lieu de HTTP
-  - Très utile pour gérer plusieurs sous-domaines
+- **Automatisation Wildcard SSL** : Intégration avec APIs DNS (Cloudflare, Route53, OVH)
+  - Installation automatique sans intervention manuelle
+  - Renouvellement automatique des wildcards
 
 ### Priorité Moyenne
 - **Tests automatisés avancés** : Étendre la suite de tests

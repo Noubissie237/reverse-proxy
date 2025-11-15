@@ -15,12 +15,15 @@ Automatisez la création de Virtual Hosts Apache avec redirection HTTPS automati
 
 - ✅ **Création automatisée** de Virtual Hosts Apache
 - ✅ **SSL/HTTPS automatique** avec Let's Encrypt (certificats gratuits)
+- ✅ **Certificats Wildcard** (`*.example.com`) pour tous les sous-domaines
 - ✅ **Redirection automatique HTTP → HTTPS**
 - ✅ **Proxy inverse** vers n'importe quel port local
 - ✅ **Gestion complète** : créer, supprimer, lister les sites
+- ✅ **Monitoring** : statut des sites, vérification SSL, statistiques
 - ✅ **Logs séparés** par domaine
 - ✅ **Renouvellement automatique** des certificats SSL
 - ✅ **En-têtes de sécurité** inclus
+- ✅ **Tests automatisés** avec CI/CD
 
 ## 📋 Prérequis
 
@@ -36,7 +39,7 @@ Automatisez la création de Virtual Hosts Apache avec redirection HTTPS automati
 
 ```bash
 # Télécharger le gestionnaire Python
-wget https://raw.githubusercontent.com/Noubissie237/reverse-proxy/main/vhost_manager.py
+wget https://raw.githubusercontent.com/Noubissie237/reverse-proxy/main/manage.py
 
 # Télécharger le script de configuration SSL
 wget https://raw.githubusercontent.com/Noubissie237/reverse-proxy/main/setup_ssl.sh
@@ -49,7 +52,7 @@ wget https://raw.githubusercontent.com/Noubissie237/reverse-proxy/main/requireme
 
 # Rendre les scripts exécutables
 chmod +x setup_ssl.sh
-chmod +x vhost_manager.py
+chmod +x manage.py
 chmod +x check_dns.py
 ```
 
@@ -86,12 +89,12 @@ python3 check_dns.py <domaine>
 ### 5. Créer un nouveau site
 
 ```bash
-sudo python3 vhost_manager.py create <domaine> <port>
+sudo python3 manage.py create <domaine> <port>
 ```
 
 **Exemple :**
 ```bash
-sudo python3 vhost_manager.py create monsite.com 8080
+sudo python3 manage.py create monsite.com 8080
 ```
 
 Le script vous demandera :
@@ -101,13 +104,13 @@ Le script vous demandera :
 ### Lister tous les sites
 
 ```bash
-python3 vhost_manager.py list
+python3 manage.py list
 ```
 
 ### Voir le statut détaillé des sites
 
 ```bash
-python3 vhost_manager.py status
+python3 manage.py status
 ```
 
 Affiche pour chaque site :
@@ -119,7 +122,7 @@ Affiche pour chaque site :
 ### Vérifier les certificats SSL
 
 ```bash
-python3 vhost_manager.py check-ssl
+python3 manage.py check-ssl
 ```
 
 Affiche :
@@ -131,7 +134,7 @@ Affiche :
 ### Voir les statistiques
 
 ```bash
-python3 vhost_manager.py stats
+python3 manage.py stats
 ```
 
 Affiche :
@@ -143,20 +146,39 @@ Affiche :
 ### Supprimer un site
 
 ```bash
-sudo python3 vhost_manager.py delete <domaine>
+sudo python3 manage.py delete <domaine>
 ```
 
 ### Renouveler les certificats SSL
 
 ```bash
-sudo python3 vhost_manager.py renew-ssl
+sudo python3 manage.py renew-ssl
 ```
 
 ### Créer un site sans SSL
 
 ```bash
-sudo python3 vhost_manager.py create <domaine> <port> --no-ssl
+sudo python3 manage.py create <domaine> <port> --no-ssl
 ```
+
+### 🌟 Certificats Wildcard (Nouveau !)
+
+Créer un certificat pour tous les sous-domaines :
+
+```bash
+# Créer un site avec wildcard
+sudo python3 manage.py create '*.example.com' 8080
+
+# Ou installer uniquement le certificat wildcard
+sudo python3 manage.py install-wildcard-ssl '*.example.com'
+```
+
+**Avantages :**
+- Un seul certificat pour tous les sous-domaines
+- `api.example.com`, `app.example.com`, `admin.example.com`, etc.
+
+**Note :** Nécessite validation DNS manuelle (ajout d'un TXT record).  
+📚 Voir le guide complet : [WILDCARD_SSL_GUIDE.md](WILDCARD_SSL_GUIDE.md)
 
 ## 📖 Exemples Pratiques
 
@@ -164,7 +186,7 @@ sudo python3 vhost_manager.py create <domaine> <port> --no-ssl
 
 ```bash
 # Créer un site e-commerce sur le port 3000
-sudo python3 vhost_manager.py create boutique.com 3000
+sudo python3 manage.py create boutique.com 3000
 ```
 
 **Résultat :**
@@ -177,7 +199,7 @@ sudo python3 vhost_manager.py create boutique.com 3000
 ```bash
 # API sur le port 8080
 sudo python3 check_dns.py api.monapp.com
-sudo python3 vhost_manager.py create api.monapp.com 8080
+sudo python3 manage.py create api.monapp.com 8080
 ```
 
 ### Exemple 3 : Application React
@@ -185,7 +207,7 @@ sudo python3 vhost_manager.py create api.monapp.com 8080
 ```bash
 # App React en développement sur le port 3000
 sudo python3 check_dns.py app.exemple.com
-sudo python3 vhost_manager.py create app.exemple.com 3000
+sudo python3 manage.py create app.exemple.com 3000
 ```
 
 ## 📂 Structure des fichiers générés
@@ -245,7 +267,7 @@ sudo tail -f /var/log/apache2/monsite.com-ssl-error.log
 3. **Créer le Virtual Host** :
    ```bash
    sudo python3 check_dns.py nouveausite.com
-   sudo python3 vhost_manager.py create nouveausite.com 8080
+   sudo python3 manage.py create nouveausite.com 8080
    ```
 4. **Tester** : Naviguer vers `https://nouveausite.com`
 
@@ -364,7 +386,7 @@ sudo certbot renew --force-renewal
 
 ```bash
 # Vérifier tous les sites gérés
-python3 vhost_manager.py list
+python3 manage.py list
 
 # Vérifier les Virtual Hosts Apache
 sudo apache2ctl -S
@@ -465,11 +487,11 @@ Pour les environnements de développement, vous pourriez vouloir :
 
 ```bash
 # Créer un site sans SSL
-sudo python3 vhost_manager.py create dev.monsite.com 3000 --no-ssl
+sudo python3 manage.py create dev.monsite.com 3000 --no-ssl
 
 # Utiliser différents ports pour différents environnements
-sudo python3 vhost_manager.py create staging.monsite.com 3001
-sudo python3 vhost_manager.py create prod.monsite.com 3002
+sudo python3 manage.py create staging.monsite.com 3001
+sudo python3 manage.py create prod.monsite.com 3002
 ```
 
 ## 🤝 Contribution
@@ -489,7 +511,7 @@ Si vous rencontrez des problèmes ou avez des questions :
 **💡 Conseil Pro :** Ajoutez cet alias à votre `.bashrc` pour une utilisation plus facile :
 ```bash
 alias check_dns='sudo python3 /chemin/vers/check_dns.py'
-alias vhost='sudo python3 /chemin/vers/vhost_manager.py'
+alias vhost='sudo python3 /chemin/vers/manage.py'
 ```
 
 Puis utilisez simplement :
@@ -538,7 +560,7 @@ Automate the creation of Apache Virtual Hosts with automatic HTTPS redirect and 
 
 ```bash
 # Download the Python manager
-wget https://raw.githubusercontent.com/Noubissie237/reverse-proxy/main/vhost_manager.py
+wget https://raw.githubusercontent.com/Noubissie237/reverse-proxy/main/manage.py
 
 # Download the SSL setup script
 wget https://raw.githubusercontent.com/Noubissie237/reverse-proxy/main/setup_ssl.sh
@@ -551,7 +573,7 @@ wget https://raw.githubusercontent.com/Noubissie237/reverse-proxy/main/requireme
 
 # Make scripts executable
 chmod +x setup_ssl.sh
-chmod +x vhost_manager.py
+chmod +x manage.py
 chmod +x check_dns.py
 ```
 
@@ -588,12 +610,12 @@ python3 check_dns.py <domain>
 ### 5. Create a new site
 
 ```bash
-sudo python3 vhost_manager.py create <domain> <port>
+sudo python3 manage.py create <domain> <port>
 ```
 
 **Example:**
 ```bash
-sudo python3 vhost_manager.py create mysite.com 8080
+sudo python3 manage.py create mysite.com 8080
 ```
 
 The script will ask you:
@@ -603,13 +625,13 @@ The script will ask you:
 ### List all sites
 
 ```bash
-python3 vhost_manager.py list
+python3 manage.py list
 ```
 
 ### View detailed site status
 
 ```bash
-python3 vhost_manager.py status
+python3 manage.py status
 ```
 
 Shows for each site:
@@ -621,7 +643,7 @@ Shows for each site:
 ### Check SSL certificates
 
 ```bash
-python3 vhost_manager.py check-ssl
+python3 manage.py check-ssl
 ```
 
 Shows:
@@ -633,7 +655,7 @@ Shows:
 ### View statistics
 
 ```bash
-python3 vhost_manager.py stats
+python3 manage.py stats
 ```
 
 Shows:
@@ -645,19 +667,19 @@ Shows:
 ### Delete a site
 
 ```bash
-sudo python3 vhost_manager.py delete <domain>
+sudo python3 manage.py delete <domain>
 ```
 
 ### Renew SSL certificates
 
 ```bash
-sudo python3 vhost_manager.py renew-ssl
+sudo python3 manage.py renew-ssl
 ```
 
 ### Create a site without SSL
 
 ```bash
-sudo python3 vhost_manager.py create <domain> <port> --no-ssl
+sudo python3 manage.py create <domain> <port> --no-ssl
 ```
 
 ## 📖 Practical Examples
@@ -666,7 +688,7 @@ sudo python3 vhost_manager.py create <domain> <port> --no-ssl
 
 ```bash
 # Create an e-commerce site on port 3000
-sudo python3 vhost_manager.py create shop.com 3000
+sudo python3 manage.py create shop.com 3000
 ```
 
 **Result:**
@@ -679,7 +701,7 @@ sudo python3 vhost_manager.py create shop.com 3000
 ```bash
 # API on port 8080
 sudo python3 check_dns.py api.myapp.com
-sudo python3 vhost_manager.py create api.myapp.com 8080
+sudo python3 manage.py create api.myapp.com 8080
 ```
 
 ### Example 3: React Application
@@ -687,7 +709,7 @@ sudo python3 vhost_manager.py create api.myapp.com 8080
 ```bash
 # React app in development on port 3000
 sudo python3 check_dns.py app.example.com
-sudo python3 vhost_manager.py create app.example.com 3000
+sudo python3 manage.py create app.example.com 3000
 ```
 
 ## 📂 Generated file structure
@@ -747,7 +769,7 @@ sudo tail -f /var/log/apache2/mysite.com-ssl-error.log
 3. **Create the Virtual Host**:
    ```bash
    sudo python3 check_dns.py newsite.com
-   sudo python3 vhost_manager.py create newsite.com 8080
+   sudo python3 manage.py create newsite.com 8080
    ```
 4. **Test**: Navigate to `https://newsite.com`
 
@@ -866,7 +888,7 @@ sudo certbot renew --force-renewal
 
 ```bash
 # Check all managed sites
-python3 vhost_manager.py list
+python3 manage.py list
 
 # Check Apache Virtual Hosts
 sudo apache2ctl -S
@@ -967,11 +989,11 @@ For development environments, you might want to:
 
 ```bash
 # Create site without SSL
-sudo python3 vhost_manager.py create dev.mysite.com 3000 --no-ssl
+sudo python3 manage.py create dev.mysite.com 3000 --no-ssl
 
 # Use different ports for different environments
-sudo python3 vhost_manager.py create staging.mysite.com 3001
-sudo python3 vhost_manager.py create prod.mysite.com 3002
+sudo python3 manage.py create staging.mysite.com 3001
+sudo python3 manage.py create prod.mysite.com 3002
 ```
 
 ## 🤝 Contributing
@@ -991,7 +1013,7 @@ If you encounter issues or have questions:
 **💡 Pro Tip:** Add this alias to your `.bashrc` for easier usage:
 ```bash
 alias check_dns='sudo python3 /path/to/check_dns.py'
-alias vhost='sudo python3 /path/to/vhost_manager.py'
+alias vhost='sudo python3 /path/to/manage.py'
 ```
 
 Then simply use:

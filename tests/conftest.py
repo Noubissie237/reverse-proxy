@@ -12,7 +12,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 @pytest.fixture
 def mock_manager():
     """Create a mock VHostManager without initialization"""
-    from vhost_manager import ApacheVHostManager
+    from vhost_manager.core import ApacheVHostManager
     manager = ApacheVHostManager.__new__(ApacheVHostManager)
     manager.sites = {}
     return manager

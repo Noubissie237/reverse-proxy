@@ -8,17 +8,21 @@ from datetime import datetime
 class TestStatusChecking:
     """Test site status checking"""
     
-    def test_check_port_in_use(self, mock_manager):
+    def test_check_port_in_use(self):
         """Test port availability checking"""
+        from vhost_manager.monitoring import check_port_in_use
+        
         # Port 80 is likely in use or not accessible
         # Port 65534 is likely not in use
-        result = mock_manager.check_port_in_use(65534)
+        result = check_port_in_use(65534)
         assert isinstance(result, bool)
     
-    def test_port_check_invalid_port(self, mock_manager):
+    def test_port_check_invalid_port(self):
         """Test port check with invalid port"""
+        from vhost_manager.monitoring import check_port_in_use
+        
         # Should handle gracefully
-        result = mock_manager.check_port_in_use(99999)
+        result = check_port_in_use(99999)
         assert isinstance(result, bool)
 
 
@@ -85,11 +89,12 @@ class TestStatistics:
 class TestSiteStatus:
     """Test individual site status"""
     
-    def test_site_status_structure(self, mock_manager, sample_site_config):
+    def test_site_status_structure(self, sample_site_config):
         """Test that site status has correct structure"""
-        mock_manager.sites = {'example.com': sample_site_config}
+        from vhost_manager.monitoring import check_site_status
         
-        status = mock_manager.check_site_status('example.com')
+        sites = {'example.com': sample_site_config}
+        status = check_site_status('example.com', sites)
         
         assert 'domain' in status
         assert 'apache_enabled' in status
@@ -98,17 +103,21 @@ class TestSiteStatus:
         assert 'ssl_valid' in status
         assert 'ssl_days_remaining' in status
     
-    def test_site_status_nonexistent(self, mock_manager):
+    def test_site_status_nonexistent(self):
         """Test status for nonexistent site"""
-        status = mock_manager.check_site_status('nonexistent.com')
+        from vhost_manager.monitoring import check_site_status
+        
+        status = check_site_status('nonexistent.com', {})
         
         assert status['domain'] == 'nonexistent.com'
         assert status['apache_enabled'] is False
         assert status['port_active'] is False
     
-    def test_site_status_ssl_disabled(self, mock_manager):
+    def test_site_status_ssl_disabled(self):
         """Test status for site without SSL"""
-        mock_manager.sites = {
+        from vhost_manager.monitoring import check_site_status
+        
+        sites = {
             'nossl.com': {
                 'port': 8080,
                 'ssl': False,
@@ -117,7 +126,7 @@ class TestSiteStatus:
             }
         }
         
-        status = mock_manager.check_site_status('nossl.com')
+        status = check_site_status('nossl.com', sites)
         assert status['ssl_enabled'] is False
         assert status['ssl_days_remaining'] is None
 

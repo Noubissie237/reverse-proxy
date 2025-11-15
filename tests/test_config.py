@@ -11,46 +11,50 @@ from datetime import datetime
 class TestConfigManagement:
     """Test configuration loading and saving"""
     
-    def test_load_empty_config(self, mock_manager):
+    def test_load_empty_config(self):
         """Test loading when no config file exists"""
-        mock_manager.config_file = "/nonexistent/path/config.json"
-        mock_manager.load_config()
-        assert mock_manager.sites == {}
+        from vhost_manager.config import ConfigManager
+        
+        config_manager = ConfigManager(config_file="/nonexistent/path/config.json")
+        assert config_manager.sites == {}
     
-    def test_save_and_load_config(self, mock_manager, sample_site_config):
+    def test_save_and_load_config(self, sample_site_config):
         """Test saving and loading configuration"""
+        from vhost_manager.config import ConfigManager
+        
         # Create temporary file
         with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.json') as f:
             temp_file = f.name
         
         try:
-            mock_manager.config_file = temp_file
-            mock_manager.sites = {
+            config_manager = ConfigManager(config_file=temp_file)
+            config_manager.sites = {
                 'example.com': sample_site_config
             }
             
             # Save
-            mock_manager.save_config()
+            config_manager.save_config()
             assert os.path.exists(temp_file)
             
             # Load
-            mock_manager.sites = {}
-            mock_manager.load_config()
-            assert 'example.com' in mock_manager.sites
-            assert mock_manager.sites['example.com']['port'] == 8080
-            assert mock_manager.sites['example.com']['ssl'] is True
+            config_manager2 = ConfigManager(config_file=temp_file)
+            assert 'example.com' in config_manager2.sites
+            assert config_manager2.sites['example.com']['port'] == 8080
+            assert config_manager2.sites['example.com']['ssl'] is True
         finally:
             if os.path.exists(temp_file):
                 os.remove(temp_file)
     
-    def test_config_json_format(self, mock_manager, sample_site_config):
+    def test_config_json_format(self, sample_site_config):
         """Test that saved config is valid JSON"""
+        from vhost_manager.config import ConfigManager
+        
         with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.json') as f:
             temp_file = f.name
         
         try:
-            mock_manager.config_file = temp_file
-            mock_manager.sites = {
+            config_manager = ConfigManager(config_file=temp_file)
+            config_manager.sites = {
                 'example.com': sample_site_config,
                 'api.example.com': {
                     'port': 3000,
@@ -60,7 +64,7 @@ class TestConfigManagement:
                 }
             }
             
-            mock_manager.save_config()
+            config_manager.save_config()
             
             # Read and verify JSON
             with open(temp_file, 'r') as f:
@@ -74,13 +78,15 @@ class TestConfigManagement:
             if os.path.exists(temp_file):
                 os.remove(temp_file)
     
-    def test_multiple_sites(self, mock_manager):
+    def test_multiple_sites(self):
         """Test managing multiple sites"""
+        from vhost_manager.config import ConfigManager
+        
         with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.json') as f:
             temp_file = f.name
         
         try:
-            mock_manager.config_file = temp_file
+            config_manager = ConfigManager(config_file=temp_file)
             
             # Add multiple sites
             sites = {
@@ -93,16 +99,15 @@ class TestConfigManagement:
                 for i in range(5)
             }
             
-            mock_manager.sites = sites
-            mock_manager.save_config()
+            config_manager.sites = sites
+            config_manager.save_config()
             
             # Load and verify
-            mock_manager.sites = {}
-            mock_manager.load_config()
+            config_manager2 = ConfigManager(config_file=temp_file)
             
-            assert len(mock_manager.sites) == 5
-            assert mock_manager.sites['site0.example.com']['ssl'] is True
-            assert mock_manager.sites['site1.example.com']['ssl'] is False
+            assert len(config_manager2.sites) == 5
+            assert config_manager2.sites['site0.example.com']['ssl'] is True
+            assert config_manager2.sites['site1.example.com']['ssl'] is False
         finally:
             if os.path.exists(temp_file):
                 os.remove(temp_file)
