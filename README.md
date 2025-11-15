@@ -100,6 +100,42 @@ Le script vous demandera :
 python3 vhost_manager.py list
 ```
 
+### Voir le statut détaillé des sites
+
+```bash
+python3 vhost_manager.py status
+```
+
+Affiche pour chaque site :
+- Statut Apache (activé/désactivé)
+- Statut du service sur le port
+- Statut SSL et jours restants avant expiration
+- Date de création
+
+### Vérifier les certificats SSL
+
+```bash
+python3 vhost_manager.py check-ssl
+```
+
+Affiche :
+- Liste de tous les certificats SSL
+- Date d'expiration
+- Jours restants
+- Alertes si expiration < 30 jours
+
+### Voir les statistiques
+
+```bash
+python3 vhost_manager.py stats
+```
+
+Affiche :
+- Nombre total de sites
+- Sites actifs vs inactifs
+- Répartition SSL/non-SSL
+- Distribution des ports
+
 ### Supprimer un site
 
 ```bash
@@ -565,6 +601,42 @@ The script will ask you:
 ```bash
 python3 vhost_manager.py list
 ```
+
+### View detailed site status
+
+```bash
+python3 vhost_manager.py status
+```
+
+Shows for each site:
+- Apache status (enabled/disabled)
+- Service status on port
+- SSL status and days until expiration
+- Creation date
+
+### Check SSL certificates
+
+```bash
+python3 vhost_manager.py check-ssl
+```
+
+Shows:
+- List of all SSL certificates
+- Expiration date
+- Days remaining
+- Alerts if expiration < 30 days
+
+### View statistics
+
+```bash
+python3 vhost_manager.py stats
+```
+
+Shows:
+- Total number of sites
+- Active vs inactive sites
+- SSL/non-SSL distribution
+- Port distribution
 
 ### Delete a site
 

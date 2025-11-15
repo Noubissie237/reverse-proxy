@@ -6,8 +6,29 @@
 4. ✅ **Requirements.txt** : Fichier de dépendances créé
 5. ✅ **Tests** : Suite de tests créée (`test_simple.py`)
 6. ✅ **Documentation** : README mis à jour avec instructions d'installation des dépendances
-7. ✅ **CHANGELOG** : Fichier de suivi des versions créé
-8. ✅ **.gitignore** : Fichier créé pour ignorer les fichiers temporaires
+7. ✅ **.gitignore** : Fichier créé pour ignorer les fichiers temporaires
+
+## ✅ Améliorations terminées (v1.2.0 - Monitoring)
+
+1. ✅ **Commande `status`** : Affiche l'état détaillé de tous les sites
+   - Statut Apache (activé/désactivé)
+   - Statut du service sur le port
+   - Statut SSL et jours restants avant expiration
+   
+2. ✅ **Commande `check-ssl`** : Vérification des certificats SSL
+   - Liste tous les certificats
+   - Date d'expiration et jours restants
+   - Alertes si expiration < 30 jours
+   - Recommandations de renouvellement
+   
+3. ✅ **Commande `stats`** : Statistiques globales
+   - Nombre total de sites
+   - Sites actifs vs inactifs
+   - Répartition SSL/non-SSL
+   - Distribution des ports
+   
+4. ✅ **Gestion des logs améliorée** : Fallback vers répertoire utilisateur si pas de permissions root
+5. ✅ **Dépendance pyOpenSSL** : Ajoutée pour lecture des certificats SSL
 
 ## Fonctionnalités à ajouter (Prochaines versions)
 
