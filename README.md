@@ -1,5 +1,9 @@
 # 🌐 Apache Virtual Host Manager
 
+![Tests](https://github.com/Noubissie237/reverse-proxy/workflows/Tests/badge.svg)
+![Python](https://img.shields.io/badge/python-3.9%2B-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+
 <details>
 <summary>Version Française</summary>
 

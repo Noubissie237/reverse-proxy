@@ -49,7 +49,7 @@ class ApacheVHostManager:
     SSL certificate installation and configuration.
     """
     
-    VERSION = "1.2.0"
+    VERSION = "1.3.0"
     
     def __init__(self):
         self.sites_available = "/etc/apache2/sites-available"

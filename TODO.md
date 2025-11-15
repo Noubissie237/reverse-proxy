@@ -30,6 +30,28 @@
 4. ✅ **Gestion des logs améliorée** : Fallback vers répertoire utilisateur si pas de permissions root
 5. ✅ **Dépendance pyOpenSSL** : Ajoutée pour lecture des certificats SSL
 
+## ✅ Améliorations terminées (v1.3.0 - Tests Automatisés)
+
+1. ✅ **Suite de tests complète** : 27 tests unitaires
+   - Tests de validation (email, port, domaine)
+   - Tests de configuration (sauvegarde/chargement JSON)
+   - Tests de monitoring (status, stats, check-ssl)
+   
+2. ✅ **Configuration pytest** : Framework de tests moderne
+   - pytest.ini configuré
+   - Fixtures réutilisables
+   - Coverage reporting
+   
+3. ✅ **GitHub Actions CI/CD** : Tests automatiques
+   - Tests sur Python 3.9, 3.10, 3.11, 3.12
+   - Exécution automatique à chaque push/PR
+   - Rapport de couverture
+   
+4. ✅ **Badges de statut** : Visibilité de la qualité
+   - Badge de tests
+   - Badge de version Python
+   - Badge de licence
+
 ## Fonctionnalités à ajouter (Prochaines versions)
 
 ### Priorité Haute
