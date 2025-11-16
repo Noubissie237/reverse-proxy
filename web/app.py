@@ -339,16 +339,23 @@ def utility_processor():
 
 
 if __name__ == '__main__':
-    # Check if running with sudo
-    if not check_sudo():
-        print("⚠️  Warning: Not running with sudo privileges")
-        print("   Some features may not work correctly")
+    import os
+    
+    # Determine if running in production
+    is_production = os.environ.get('FLASK_ENV') == 'production'
+    
+    if not is_production:
+        # Development mode warnings
+        if not check_sudo():
+            print("⚠️  Warning: Not running with sudo privileges")
+            print("   Some features may not work correctly")
+            print()
+        
+        print("🚀 Starting Apache VHost Manager Web Interface")
+        print(f"📍 Access at: http://localhost:5000")
+        print(f"👤 Default credentials: {ADMIN_USERNAME} / {ADMIN_PASSWORD}")
+        print("⚠️  Change default password in production!")
         print()
     
-    print("🚀 Starting Apache VHost Manager Web Interface")
-    print(f"📍 Access at: http://localhost:5000")
-    print(f"👤 Default credentials: {ADMIN_USERNAME} / {ADMIN_PASSWORD}")
-    print("⚠️  Change default password in production!")
-    print()
-    
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    # Production: no debug, no verbose output
+    app.run(host='0.0.0.0', port=5000, debug=not is_production)

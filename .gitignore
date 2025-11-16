@@ -38,7 +38,16 @@ Thumbs.db
 
 # Logs
 *.log
+/var/log/vhost-manager/
 
 # Test coverage
 .coverage
 htmlcov/
+
+# Environment files (contains secrets)
+.env
+.env.production
+.env.local
+
+# Flask session
+flask_session/

@@ -1,0 +1,28 @@
+[Unit]
+Description=Apache VHost Manager Web Interface
+After=network.target apache2.service
+Wants=apache2.service
+
+[Service]
+Type=notify
+User=root
+Group=root
+WorkingDirectory=/opt/reverse-proxy
+Environment="PATH=/opt/reverse-proxy/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+Environment="VIRTUAL_ENV=/opt/reverse-proxy/venv"
+EnvironmentFile=/opt/reverse-proxy/.env.production
+ExecStart=/opt/reverse-proxy/venv/bin/gunicorn \
+    --workers 4 \
+    --bind 0.0.0.0:5000 \
+    --timeout 120 \
+    --access-logfile /var/log/vhost-manager/access.log \
+    --error-logfile /var/log/vhost-manager/error.log \
+    --log-level info \
+    --capture-output \
+    --chdir /opt/reverse-proxy/web \
+    app:app
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
