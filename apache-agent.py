@@ -37,6 +37,16 @@ def execute_command(command):
             text=True,
             timeout=30
         )
+        
+        # Pour a2enmod, considérer comme succès si le module est déjà activé
+        if 'a2enmod' in command and 'already enabled' in result.stdout.lower():
+            return {
+                'success': True,
+                'stdout': result.stdout,
+                'stderr': result.stderr,
+                'returncode': 0
+            }
+        
         return {
             'success': result.returncode == 0,
             'stdout': result.stdout,
