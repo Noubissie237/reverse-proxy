@@ -18,10 +18,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Créer un utilisateur non-root avec sudo
-RUN useradd -m -s /bin/bash vhostmanager && \
-    echo "vhostmanager ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-
 # Définir le répertoire de travail
 WORKDIR /app
 
@@ -32,17 +28,16 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copier le code de l'application
-COPY --chown=vhostmanager:vhostmanager . .
+COPY . .
 
 # Créer les répertoires nécessaires
-RUN mkdir -p /var/log/vhost-manager && \
-    chown -R vhostmanager:vhostmanager /var/log/vhost-manager
+RUN mkdir -p /var/log/vhost-manager
 
 # Exposer le port de l'application
 EXPOSE 5000
 
-# Passer à l'utilisateur non-root
-USER vhostmanager
+# Rester en tant que root pour avoir les privilèges sudo
+# USER root (déjà root par défaut)
 
 # Healthcheck pour vérifier que l'application fonctionne
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \

@@ -12,9 +12,8 @@ services:
     env_file:
       - .env.production
     
-    # Ports exposés
-    ports:
-      - "5000:5000"
+    # Note: Pas besoin de 'ports' avec network_mode: host
+    # Le conteneur utilise directement les ports de l'hôte
     
     # Volumes pour persister les données et accéder à Apache
     volumes:
@@ -42,9 +41,9 @@ services:
     # Privilèges nécessaires pour gérer Apache
     privileged: true
     
-    # Réseau
-    networks:
-      - vhost-network
+    # Utiliser le réseau de l'hôte pour accéder aux services système (Apache, systemctl, etc.)
+    # Cela permet au conteneur d'interagir directement avec Apache sur l'hôte
+    network_mode: "host"
     
     # Healthcheck
     healthcheck:
@@ -64,8 +63,3 @@ volumes:
     driver: local
   vhost-config:
     driver: local
-
-# Réseau personnalisé
-networks:
-  vhost-network:
-    driver: bridge
