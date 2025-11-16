@@ -51,6 +51,7 @@ cd reverse-proxy
 
 ```bash
 # Créer un environnement virtuel
+sudo apt install python3.10-venv
 python3 -m venv venv
 source venv/bin/activate
 
@@ -451,6 +452,7 @@ cd reverse-proxy
 
 ```bash
 # Create virtual environment
+sudo apt install python3.10-venv
 python3 -m venv venv
 source venv/bin/activate
 
