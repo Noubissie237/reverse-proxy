@@ -44,7 +44,7 @@ Gérez vos Virtual Hosts Apache en quelques clics grâce à une interface web in
 
 ```bash
 docker --version
-docker-compose --version
+docker compose --version
 ```
 
 ### Étape 2 : Cloner le projet
@@ -428,7 +428,7 @@ Manage your Apache Virtual Hosts with just a few clicks using an intuitive web i
 ```bash
 # Verify installation
 docker --version
-docker-compose --version
+docker compose --version
 ```
 
 ### Step 2: Clone the project
