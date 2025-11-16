@@ -1,0 +1,22 @@
+[Unit]
+Description=Apache Agent for VHost Manager
+After=network.target apache2.service
+Requires=apache2.service
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/root/reverse-proxy
+ExecStart=/usr/bin/python3 /root/reverse-proxy/apache-agent.py
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+# Security
+NoNewPrivileges=false
+PrivateTmp=false
+
+[Install]
+WantedBy=multi-user.target

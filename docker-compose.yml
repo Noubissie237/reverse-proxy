@@ -36,6 +36,9 @@ services:
       # Fichier de configuration des sites (IMPORTANT pour la persistance)
       # Ce fichier doit exister sur l'hôte, il sera créé automatiquement si absent
       - /etc/vhost_manager.json:/etc/vhost_manager.json
+      
+      # Socket pour communiquer avec l'Apache Agent sur l'hôte
+      - /var/run/apache-agent.sock:/var/run/apache-agent.sock
     
     # Privilèges nécessaires pour gérer Apache
     privileged: true
