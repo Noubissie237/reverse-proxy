@@ -66,9 +66,15 @@ package, recreate your virtual environment.
 
 Failing command: /root/reverse-proxy/venv/bin/python3
 ```
-installez le package python3-venv avec la commande indiquée dans le message :
+Supprimez le dossier venv et installez le package python3-venv avec la commande indiquée dans le message :
 ```bash
+sudo rm -r venv
 sudo apt install python3.x-venv # remplacez x par sa valeur indiquée dans le message plus haut
+```
+
+Puis réessayez de créer l'environnement virtuel :
+```bash
+python3 -m venv venv
 ```
 
 ```bash
@@ -482,9 +488,14 @@ package, recreate your virtual environment.
 
 Failing command: /root/reverse-proxy/venv/bin/python3
 ```
-install the package python3-venv with the command indicated in the message :
+Delete the venv folder and install the package python3-venv with the command indicated in the message :
 ```bash
+sudo rm -r venv
 sudo apt install python3.x-venv # replace x with the value indicated in the message above
+```
+Then recreate the virtual environment :
+```bash
+python3 -m venv venv
 ```
 
 ```bash
