@@ -80,9 +80,28 @@ if [ ! -f "/etc/vhost_manager.json" ]; then
     echo -e "${YELLOW}⚠️  Fichier /etc/vhost_manager.json non trouvé${NC}"
     echo "   Création du fichier..."
     sudo touch /etc/vhost_manager.json
-    sudo chmod 644 /etc/vhost_manager.json
+    sudo chmod 666 /etc/vhost_manager.json
     echo "{}" | sudo tee /etc/vhost_manager.json > /dev/null
     echo -e "${GREEN}✅ Fichier créé${NC}"
+else
+    # S'assurer que les permissions sont correctes
+    sudo chmod 666 /etc/vhost_manager.json
+fi
+
+# Vérifier que l'Apache Agent est installé et actif
+if [ ! -S "/var/run/apache-agent.sock" ]; then
+    echo -e "${YELLOW}⚠️  Apache Agent non détecté${NC}"
+    echo "   L'Apache Agent est nécessaire pour gérer Apache depuis le conteneur."
+    echo ""
+    echo "   Pour l'installer, exécutez :"
+    echo -e "   ${BLUE}chmod +x install-apache-agent.sh${NC}"
+    echo -e "   ${BLUE}sudo ./install-apache-agent.sh${NC}"
+    echo ""
+    read -p "Continuer sans l'agent ? (y/N) " -n 1 -r
+    echo ""
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        exit 1
+    fi
 fi
 echo ""
 

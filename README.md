@@ -40,14 +40,9 @@ Gérez vos Virtual Hosts Apache en quelques clics grâce à une interface web in
 
 ## Installation Docker
 
-### Étape 1 : Installer Docker (si nécessaire)
+### Étape 1 : Vérifiez que vous avez Docker et Docker Compose installés
 
 ```bash
-# Installer Docker
-curl -fsSL https://get.docker.com -o get-docker.sh
-sudo sh get-docker.sh
-
-# Vérifier l'installation
 docker --version
 docker-compose --version
 ```
@@ -428,13 +423,9 @@ Manage your Apache Virtual Hosts with just a few clicks using an intuitive web i
 
 ## Docker Installation
 
-### Step 1: Install Docker (if needed)
+### Step 1: Check Docker Installation
 
 ```bash
-# Install Docker
-curl -fsSL https://get.docker.com -o get-docker.sh
-sudo sh get-docker.sh
-
 # Verify installation
 docker --version
 docker-compose --version
