@@ -161,13 +161,9 @@ Configuration
 
 ### Accéder à l'interface
 
-1. **Ouvrir le navigateur** : `http://localhost:5000`
+1. **Ouvrir le navigateur** : `http://IP_DU_SERVEUR:5000`
 2. **Se connecter** avec les identifiants configurés dans `.env.production`
 
-**Note :** Pour accéder depuis un autre appareil sur le réseau, utilisez l'IP du serveur :
-```
-http://192.168.1.X:5000
-```
 
 ## Utilisation de l'interface
 
@@ -562,13 +558,9 @@ Configuration
 
 ### Access the interface
 
-1. **Open browser**: `http://localhost:5000`
+1. **Open browser**: `http://IP_DU_SERVEUR:5000`
 2. **Login** with credentials configured in `.env.production`
 
-**Note:** To access from another device on the network, use the server IP:
-```
-http://192.168.1.X:5000
-```
 
 ## Using the Interface
 
