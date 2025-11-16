@@ -33,8 +33,9 @@ services:
       # Logs Apache (lecture seule)
       - /var/log/apache2:/var/log/apache2:ro
       
-      # Configuration des sites (persistance)
-      - vhost-config:/app/config
+      # Fichier de configuration des sites (IMPORTANT pour la persistance)
+      # Ce fichier doit exister sur l'hôte, il sera créé automatiquement si absent
+      - /etc/vhost_manager.json:/etc/vhost_manager.json
     
     # Privilèges nécessaires pour gérer Apache
     privileged: true
@@ -58,6 +59,4 @@ services:
 # Volumes nommés pour la persistance
 volumes:
   vhost-logs:
-    driver: local
-  vhost-config:
     driver: local

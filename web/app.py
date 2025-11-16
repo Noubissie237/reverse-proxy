@@ -167,11 +167,11 @@ def create_site():
                 flash(f'Le site {domain} existe déjà', 'error')
                 return render_template('create_site.html')
             
-            # Try to create the site
+            # Try to create the site in non-interactive mode
             # Note: create_site uses print() instead of raising exceptions
             # We need to check if it actually worked
             initial_sites = set(manager.sites.keys())
-            manager.create_site(domain, port, ssl)
+            manager.create_site(domain, port, ssl, interactive=False, force=True)
             
             # Reload config to check if site was actually created
             manager.config_manager.load_config()

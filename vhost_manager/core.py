@@ -128,7 +128,7 @@ class ApacheVHostManager:
             print(f"❌ Failed to create configuration file: {e}")
             return None
     
-    def create_site(self, domain, port, ssl=True):
+    def create_site(self, domain, port, ssl=True, interactive=True, force=False):
         """
         Create a new Virtual Host
         
@@ -136,6 +136,8 @@ class ApacheVHostManager:
             domain (str): Domain name
             port (int): Local port to proxy to
             ssl (bool): Whether to install SSL certificate
+            interactive (bool): Whether to prompt for user input (default: True)
+            force (bool): Force creation without prompts (default: False)
         """
         check_sudo()
         
@@ -159,8 +161,12 @@ class ApacheVHostManager:
         
         # Check if site already exists
         if domain in self.sites:
-            response = input(f"⚠️  Site {domain} already exists. Replace it? (y/n): ")
-            if response.lower() != 'y':
+            if interactive and not force:
+                response = input(f"⚠️  Site {domain} already exists. Replace it? (y/n): ")
+                if response.lower() != 'y':
+                    return
+            elif not force:
+                print(f"❌ Site {domain} already exists. Use force=True to replace.")
                 return
         
         # Check if port is in use
@@ -168,9 +174,12 @@ class ApacheVHostManager:
             print(f"💡 Service appears to be running on port {port_num}")
         else:
             print(f"⚠️  Warning: No service detected on port {port_num}")
-            response = input("Continue anyway? (y/n): ")
-            if response.lower() != 'y':
-                return
+            if interactive and not force:
+                response = input("Continue anyway? (y/n): ")
+                if response.lower() != 'y':
+                    return
+            elif not force:
+                print("⚠️  Continuing anyway (non-interactive mode)...")
         
         print(f"🚀 Creating Virtual Host for {domain} on port {port_num}...")
         
@@ -200,8 +209,13 @@ class ApacheVHostManager:
             # Install SSL certificate if requested
             ssl_success = True
             if ssl:
-                response = input("🔒 Install SSL certificate with Let's Encrypt? (y/n): ")
-                if response.lower() == 'y':
+                # In interactive mode, ask for confirmation
+                install_ssl_cert = True
+                if interactive:
+                    response = input("🔒 Install SSL certificate with Let's Encrypt? (y/n): ")
+                    install_ssl_cert = response.lower() == 'y'
+                
+                if install_ssl_cert:
                     # Use wildcard SSL if domain is wildcard
                     if is_wildcard:
                         ssl_success = install_wildcard_ssl_certificate(domain)

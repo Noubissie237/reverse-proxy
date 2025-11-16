@@ -75,6 +75,17 @@ fi
 echo -e "${GREEN}✅ Configuration vérifiée${NC}"
 echo ""
 
+# Créer le fichier de configuration des sites s'il n'existe pas
+if [ ! -f "/etc/vhost_manager.json" ]; then
+    echo -e "${YELLOW}⚠️  Fichier /etc/vhost_manager.json non trouvé${NC}"
+    echo "   Création du fichier..."
+    sudo touch /etc/vhost_manager.json
+    sudo chmod 644 /etc/vhost_manager.json
+    echo "{}" | sudo tee /etc/vhost_manager.json > /dev/null
+    echo -e "${GREEN}✅ Fichier créé${NC}"
+fi
+echo ""
+
 # Vérifier si le conteneur existe déjà
 if docker ps -a --format '{{.Names}}' | grep -q "^vhost-manager-web$"; then
     echo -e "${YELLOW}⚠️  Le conteneur existe déjà${NC}"
