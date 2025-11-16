@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  vhost-manager:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vhost-manager-web
+    restart: unless-stopped
+    
+    # Variables d'environnement depuis .env.production
+    env_file:
+      - .env.production
+    
+    # Ports exposés
+    ports:
+      - "5000:5000"
+    
+    # Volumes pour persister les données et accéder à Apache
+    volumes:
+      # Configuration de l'application
+      - ./vhost_manager:/app/vhost_manager:ro
+      - ./web:/app/web:ro
+      - ./manage.py:/app/manage.py:ro
+      
+      # Logs persistants
+      - vhost-logs:/var/log/vhost-manager
+      
+      # Accès aux configurations Apache (lecture/écriture)
+      - /etc/apache2/sites-available:/etc/apache2/sites-available
+      - /etc/apache2/sites-enabled:/etc/apache2/sites-enabled
+      
+      # Accès aux certificats SSL (lecture/écriture)
+      - /etc/letsencrypt:/etc/letsencrypt
+      
+      # Logs Apache (lecture seule)
+      - /var/log/apache2:/var/log/apache2:ro
+      
+      # Configuration des sites (persistance)
+      - vhost-config:/app/config
+    
+    # Privilèges nécessaires pour gérer Apache
+    privileged: true
+    
+    # Réseau
+    networks:
+      - vhost-network
+    
+    # Healthcheck
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/login"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    # Dépendances (si vous avez d'autres services)
+    # depends_on:
+    #   - database
+
+# Volumes nommés pour la persistance
+volumes:
+  vhost-logs:
+    driver: local
+  vhost-config:
+    driver: local
+
+# Réseau personnalisé
+networks:
+  vhost-network:
+    driver: bridge

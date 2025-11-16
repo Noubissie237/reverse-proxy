@@ -32,108 +32,55 @@ Gérez vos Virtual Hosts Apache en quelques clics grâce à une interface web in
 ## Prérequis
 
 - **Serveur Linux** (Ubuntu/Debian 20.04+ recommandé)
-- **Apache2** installé et configuré
-- **Python 3.9+** avec pip
+- **Apache2** installé et configuré sur l'hôte
+- **Docker** et **Docker Compose** installés
 - **Privilèges sudo**
 - **DNS configuré** (enregistrement A pointant vers votre serveur)
-- **Ports 80 et 443 ouverts** dans le pare-feu
+- **Ports 80, 443 et 5000 ouverts** dans le pare-feu
 
-## Installation
+## Installation Docker
 
-### 1. Cloner le dépôt
+### Étape 1 : Installer Docker (si nécessaire)
+
+```bash
+# Installer Docker
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+
+# Vérifier l'installation
+docker --version
+docker-compose --version
+```
+
+### Étape 2 : Cloner le projet
 
 ```bash
 git clone https://github.com/Noubissie237/reverse-proxy.git
 cd reverse-proxy
 ```
 
-### 2. Installer les dépendances
+### Étape 3 : Configurer l'application
 
 ```bash
-# Créer un environnement virtuel
-python3 -m venv venv
-```
-Note : Si vous avez un message de ce genre 
-```bash
-The virtual environment was not created successfully because ensurepip is not
-available.  On Debian/Ubuntu systems, you need to install the python3-venv
-package using the following command.
-
-    apt install python3.12-venv
-
-You may need to use sudo with that command.  After installing the python3-venv
-package, recreate your virtual environment.
-
-Failing command: /root/reverse-proxy/venv/bin/python3
-```
-Supprimez le dossier venv et installez le package python3-venv avec la commande indiquée dans le message :
-```bash
-sudo rm -r venv
-sudo apt install python3.x-venv # remplacez x par sa valeur indiquée dans le message plus haut
-```
-
-Puis réessayez de créer l'environnement virtuel :
-```bash
-python3 -m venv venv
-```
-
-```bash
-source venv/bin/activate
-
-# Installer les dépendances
-pip install -r requirements.txt
-```
-
-### 3. Configuration SSL initiale
-
-```bash
-# Rendre les scripts exécutables
-chmod +x setup_ssl.sh start-production.sh
-
-# Installer Certbot et configurer le renouvellement automatique
-sudo ./setup_ssl.sh
-```
-
-## Configuration de l'interface web
-
-### Étape 1 : Créer le fichier de configuration
-
-```bash
+# Copier le fichier de configuration
 cp .env.example .env.production
-```
 
-### Étape 2 : Générer une clé secrète
-
-```bash
+# Générer une clé secrète
 python3 -c 'import secrets; print(secrets.token_hex(32))'
 ```
 
-**Copiez la clé générée**, vous en aurez besoin à l'étape suivante.
-
-### Étape 3 : Modifier le fichier de configuration
+**Copiez la clé générée**, puis modifiez `.env.production` :
 
 ```bash
 nano .env.production
 ```
 
-**Instructions pour utiliser nano :**
-
-1. **Naviguer** : Utilisez les flèches du clavier pour vous déplacer
-2. **Modifier** : Tapez directement pour modifier le texte
-3. **Sauvegarder** : Appuyez sur `Ctrl + O`, puis `Entrée`
-4. **Quitter** : Appuyez sur `Ctrl + X`
-
-**Modifiez les lignes suivantes :**
+**Modifiez ces lignes :**
 
 ```bash
-SECRET_KEY=CHANGE_THIS_TO_A_RANDOM_SECRET_KEY
-# Remplacez par la clé générée à l'étape 2
-
-ADMIN_USERNAME=admin
-# Remplacez "admin" par votre nom d'utilisateur
-
-ADMIN_PASSWORD=CHANGE_THIS_PASSWORD
-# Remplacez par un mot de passe fort (minimum 12 caractères)
+SECRET_KEY=votre_cle_generee_ici
+ADMIN_USERNAME=votre_username
+ADMIN_PASSWORD=VotreMotDePasseSecurise123!
 ```
 
 **Exemple de configuration sécurisée :**
@@ -143,51 +90,97 @@ SECRET_KEY=a8f5f167f44f4964e6c998dee827110c47f1f1c6f5e5f8e5f5e5f5e5f5e5f5e5
 ADMIN_USERNAME=admin_prod
 ADMIN_PASSWORD=MonMotDePasse2024!Securise
 VHOST_VERBOSE=0
+HOST=0.0.0.0
+PORT=5000
 ```
 
-**Sauvegardez et quittez** : `Ctrl + O`, `Entrée`, puis `Ctrl + X`
+**Sauvegardez** : `Ctrl + O`, `Entrée`, puis `Ctrl + X`
 
-## Démarrage de l'interface web
-
-### Lancer l'interface en production
+### Étape 4 : Installer Certbot sur l'hôte
 
 ```bash
-./start-production.sh
+# Rendre le script exécutable
+chmod +x setup_ssl.sh
+
+# Installer Certbot et configurer le renouvellement automatique
+sudo ./setup_ssl.sh
+```
+
+### Étape 5 : Démarrer l'application
+
+```bash
+# Rendre le script exécutable
+chmod +x docker-start.sh
+
+# Lancer l'application
+./docker-start.sh
 ```
 
 Le script va :
-- Vérifier votre configuration
-- Installer Gunicorn si nécessaire
-- Démarrer l'interface avec 4 workers
-- Afficher l'URL d'accès
+- ✅ Vérifier Docker et Docker Compose
+- ✅ Vérifier la configuration de sécurité
+- ✅ Construire l'image Docker
+- ✅ Démarrer le conteneur en arrière-plan
+- ✅ Afficher les informations d'accès
 
 **Sortie attendue :**
 
 ```
 ═══════════════════════════════════════════════
-  Apache VHost Manager - Production Mode
+  Apache VHost Manager - Docker Mode
 ═══════════════════════════════════════════════
 
-✓ Chargement de .env.production
-✓ Environnement virtuel activé
-✓ Privilèges sudo: OK
+✅ Configuration vérifiée
 
-Configuration
 ═══════════════════════════════════════════════
-  Mode:          PRODUCTION
-  Workers:       4
-  Bind:          0.0.0.0:5000
-  Timeout:       120s
-  Verbose:       0
+  Construction de l'image Docker
 ═══════════════════════════════════════════════
 
-🚀 Démarrage de Gunicorn...
+✅ Application démarrée avec succès !
+
+═══════════════════════════════════════════════
+  Informations d'accès
+═══════════════════════════════════════════════
+  URL:           http://localhost:5000
+  Username:      admin_prod
+  Logs:          docker-compose logs -f
+  Status:        docker-compose ps
+  Arrêter:       docker-compose stop
+  Redémarrer:    docker-compose restart
+  Supprimer:     docker-compose down
+═══════════════════════════════════════════════
 ```
 
 ### Accéder à l'interface
 
-1. **Ouvrir le navigateur** : `http://IP_DU_SERVEUR:5000`
+1. **Ouvrir le navigateur** : `http://votre-serveur:5000`
 2. **Se connecter** avec les identifiants configurés dans `.env.production`
+
+## Gestion du conteneur
+
+```bash
+# Voir les logs en temps réel
+docker-compose logs -f
+
+# Voir le statut
+docker-compose ps
+
+# Arrêter le conteneur
+docker-compose stop
+
+# Démarrer le conteneur
+docker-compose start
+
+# Redémarrer le conteneur
+docker-compose restart
+
+# Arrêter et supprimer le conteneur
+docker-compose down
+
+# Mettre à jour l'application
+git pull
+docker-compose up -d --build
+```
 
 
 ## Utilisation de l'interface
@@ -264,51 +257,14 @@ Puis créer les sites dans l'interface web :
 
 **Guide complet** : [WILDCARD_SSL_GUIDE.md](WILDCARD_SSL_GUIDE.md)
 
-## Installation comme service systemd
-
-Pour que l'interface démarre automatiquement au démarrage du serveur :
-
-### 1. Copier le fichier service
-
-```bash
-sudo cp vhost-manager-web.service /etc/systemd/system/
-```
-
-### 2. Activer et démarrer le service
-
-```bash
-sudo systemctl daemon-reload
-sudo systemctl enable vhost-manager-web
-sudo systemctl start vhost-manager-web
-```
-
-### 3. Vérifier le statut
-
-```bash
-sudo systemctl status vhost-manager-web
-```
-
-### 4. Commandes utiles
-
-```bash
-# Démarrer
-sudo systemctl start vhost-manager-web
-
-# Arrêter
-sudo systemctl stop vhost-manager-web
-
-# Redémarrer
-sudo systemctl restart vhost-manager-web
-
-# Voir les logs
-sudo journalctl -u vhost-manager-web -f
-```
-
 ## Sécuriser l'interface avec HTTPS
 
 Pour accéder à l'interface via HTTPS (recommandé en production) :
 
 ```bash
+# Accéder au conteneur
+docker-compose exec vhost-manager bash
+
 # Créer un reverse proxy pour l'interface elle-même
 sudo python3 manage.py create admin.votredomaine.com 5000
 ```
@@ -317,30 +273,40 @@ Ensuite, accédez à l'interface via : `https://admin.votredomaine.com`
 
 ## Dépannage
 
-### L'interface ne démarre pas
+### Le conteneur ne démarre pas
 
 ```bash
 # Vérifier les logs
-sudo tail -f /var/log/vhost-manager/error.log
+docker-compose logs -f
 
-# Vérifier que le port 5000 n'est pas utilisé
-sudo lsof -i :5000
+# Vérifier l'état
+docker-compose ps
 
-# Relancer
-./start-production.sh
+# Reconstruire complètement
+docker-compose down
+docker-compose build --no-cache
+docker-compose up -d
 ```
 
-### Erreur "ModuleNotFoundError: No module named 'flask'"
+### Erreur "port already in use"
 
 ```bash
-# Activer l'environnement virtuel
-source venv/bin/activate
+# Vérifier quel processus utilise le port 5000
+sudo lsof -i :5000
 
-# Installer les dépendances
-pip install -r requirements.txt
+# Arrêter le processus ou changer le port dans .env.production
+```
 
-# Relancer
-./start-production.sh
+### Problèmes de permissions Apache
+
+```bash
+# Vérifier les permissions des répertoires Apache
+ls -la /etc/apache2/sites-available
+ls -la /etc/letsencrypt
+
+# Si nécessaire, ajuster les permissions
+sudo chmod -R 755 /etc/apache2/sites-available
+sudo chmod -R 755 /etc/letsencrypt
 ```
 
 ### Site créé mais inaccessible
@@ -454,107 +420,55 @@ Manage your Apache Virtual Hosts with just a few clicks using an intuitive web i
 ## Prerequisites
 
 - **Linux Server** (Ubuntu/Debian 20.04+ recommended)
-- **Apache2** installed and configured
-- **Python 3.9+** with pip
+- **Apache2** installed and configured on host
+- **Docker** and **Docker Compose** installed
 - **Sudo privileges**
 - **Configured DNS** (A record pointing to your server)
-- **Ports 80 and 443 open** in firewall
+- **Ports 80, 443 and 5000 open** in firewall
 
-## Installation
+## Docker Installation
 
-### 1. Clone the repository
+### Step 1: Install Docker (if needed)
+
+```bash
+# Install Docker
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+
+# Verify installation
+docker --version
+docker-compose --version
+```
+
+### Step 2: Clone the project
 
 ```bash
 git clone https://github.com/Noubissie237/reverse-proxy.git
 cd reverse-proxy
 ```
 
-### 2. Install dependencies
+### Step 3: Configure the application
 
 ```bash
-# Create virtual environment
-python3 -m venv venv
-```
-Note : If you get this message
-```bash
-The virtual environment was not created successfully because ensurepip is not
-available.  On Debian/Ubuntu systems, you need to install the python3-venv
-package using the following command.
-
-    apt install python3.12-venv
-
-You may need to use sudo with that command.  After installing the python3-venv
-package, recreate your virtual environment.
-
-Failing command: /root/reverse-proxy/venv/bin/python3
-```
-Delete the venv folder and install the package python3-venv with the command indicated in the message :
-```bash
-sudo rm -r venv
-sudo apt install python3.x-venv # replace x with the value indicated in the message above
-```
-Then recreate the virtual environment :
-```bash
-python3 -m venv venv
-```
-
-```bash
-source venv/bin/activate
-
-# Install dependencies
-pip install -r requirements.txt
-```
-
-### 3. Initial SSL configuration
-
-```bash
-# Make scripts executable
-chmod +x setup_ssl.sh start-production.sh
-
-# Install Certbot and configure auto-renewal
-sudo ./setup_ssl.sh
-```
-
-## Web Interface Configuration
-
-### Step 1: Create configuration file
-
-```bash
+# Copy configuration file
 cp .env.example .env.production
-```
 
-### Step 2: Generate secret key
-
-```bash
+# Generate a secret key
 python3 -c 'import secrets; print(secrets.token_hex(32))'
 ```
 
-**Copy the generated key**, you will need it in the next step.
-
-### Step 3: Edit configuration file
+**Copy the generated key**, then edit `.env.production`:
 
 ```bash
 nano .env.production
 ```
 
-**Instructions for using nano:**
-
-1. **Navigate**: Use arrow keys to move around
-2. **Edit**: Type directly to modify text
-3. **Save**: Press `Ctrl + O`, then `Enter`
-4. **Exit**: Press `Ctrl + X`
-
-**Modify the following lines:**
+**Modify these lines:**
 
 ```bash
-SECRET_KEY=CHANGE_THIS_TO_A_RANDOM_SECRET_KEY
-# Replace with the key generated in step 2
-
-ADMIN_USERNAME=admin
-# Replace "admin" with your username
-
-ADMIN_PASSWORD=CHANGE_THIS_PASSWORD
-# Replace with a strong password (minimum 12 characters)
+SECRET_KEY=your_generated_key_here
+ADMIN_USERNAME=your_username
+ADMIN_PASSWORD=YourSecurePassword123!
 ```
 
 **Example of secure configuration:**
@@ -564,51 +478,97 @@ SECRET_KEY=a8f5f167f44f4964e6c998dee827110c47f1f1c6f5e5f8e5f5e5f5e5f5e5f5e5
 ADMIN_USERNAME=admin_prod
 ADMIN_PASSWORD=MySecurePassword2024!
 VHOST_VERBOSE=0
+HOST=0.0.0.0
+PORT=5000
 ```
 
-**Save and exit**: `Ctrl + O`, `Enter`, then `Ctrl + X`
+**Save**: `Ctrl + O`, `Enter`, then `Ctrl + X`
 
-## Starting the Web Interface
-
-### Launch interface in production
+### Step 4: Install Certbot on host
 
 ```bash
-./start-production.sh
+# Make script executable
+chmod +x setup_ssl.sh
+
+# Install Certbot and configure auto-renewal
+sudo ./setup_ssl.sh
+```
+
+### Step 5: Start the application
+
+```bash
+# Make script executable
+chmod +x docker-start.sh
+
+# Launch the application
+./docker-start.sh
 ```
 
 The script will:
-- Check your configuration
-- Install Gunicorn if necessary
-- Start the interface with 4 workers
-- Display the access URL
+- ✅ Check Docker and Docker Compose
+- ✅ Verify security configuration
+- ✅ Build Docker image
+- ✅ Start container in background
+- ✅ Display access information
 
 **Expected output:**
 
 ```
 ═══════════════════════════════════════════════
-  Apache VHost Manager - Production Mode
+  Apache VHost Manager - Docker Mode
 ═══════════════════════════════════════════════
 
-✓ Loading .env.production
-✓ Virtual environment activated
-✓ Sudo privileges: OK
+✅ Configuration verified
 
-Configuration
 ═══════════════════════════════════════════════
-  Mode:          PRODUCTION
-  Workers:       4
-  Bind:          0.0.0.0:5000
-  Timeout:       120s
-  Verbose:       0
+  Building Docker image
 ═══════════════════════════════════════════════
 
-🚀 Starting Gunicorn...
+✅ Application started successfully!
+
+═══════════════════════════════════════════════
+  Access Information
+═══════════════════════════════════════════════
+  URL:           http://localhost:5000
+  Username:      admin_prod
+  Logs:          docker-compose logs -f
+  Status:        docker-compose ps
+  Stop:          docker-compose stop
+  Restart:       docker-compose restart
+  Remove:        docker-compose down
+═══════════════════════════════════════════════
 ```
 
 ### Access the interface
 
-1. **Open browser**: `http://IP_DU_SERVEUR:5000`
+1. **Open browser**: `http://your-server:5000`
 2. **Login** with credentials configured in `.env.production`
+
+## Container Management
+
+```bash
+# View logs in real-time
+docker-compose logs -f
+
+# Check status
+docker-compose ps
+
+# Stop container
+docker-compose stop
+
+# Start container
+docker-compose start
+
+# Restart container
+docker-compose restart
+
+# Stop and remove container
+docker-compose down
+
+# Update application
+git pull
+docker-compose up -d --build
+```
 
 
 ## Using the Interface
@@ -685,51 +645,14 @@ Then create sites in the web interface:
 
 **Complete guide**: [WILDCARD_SSL_GUIDE.md](WILDCARD_SSL_GUIDE.md)
 
-## Install as systemd service
-
-To have the interface start automatically on server boot:
-
-### 1. Copy service file
-
-```bash
-sudo cp vhost-manager-web.service /etc/systemd/system/
-```
-
-### 2. Enable and start service
-
-```bash
-sudo systemctl daemon-reload
-sudo systemctl enable vhost-manager-web
-sudo systemctl start vhost-manager-web
-```
-
-### 3. Check status
-
-```bash
-sudo systemctl status vhost-manager-web
-```
-
-### 4. Useful commands
-
-```bash
-# Start
-sudo systemctl start vhost-manager-web
-
-# Stop
-sudo systemctl stop vhost-manager-web
-
-# Restart
-sudo systemctl restart vhost-manager-web
-
-# View logs
-sudo journalctl -u vhost-manager-web -f
-```
-
 ## Secure interface with HTTPS
 
 To access the interface via HTTPS (recommended in production):
 
 ```bash
+# Access the container
+docker-compose exec vhost-manager bash
+
 # Create a reverse proxy for the interface itself
 sudo python3 manage.py create admin.yourdomain.com 5000
 ```
@@ -738,30 +661,40 @@ Then access the interface via: `https://admin.yourdomain.com`
 
 ## Troubleshooting
 
-### Interface won't start
+### Container won't start
 
 ```bash
 # Check logs
-sudo tail -f /var/log/vhost-manager/error.log
+docker-compose logs -f
 
-# Check if port 5000 is not in use
-sudo lsof -i :5000
+# Check status
+docker-compose ps
 
-# Restart
-./start-production.sh
+# Rebuild completely
+docker-compose down
+docker-compose build --no-cache
+docker-compose up -d
 ```
 
-### Error "ModuleNotFoundError: No module named 'flask'"
+### Error "port already in use"
 
 ```bash
-# Activate virtual environment
-source venv/bin/activate
+# Check which process is using port 5000
+sudo lsof -i :5000
 
-# Install dependencies
-pip install -r requirements.txt
+# Stop the process or change port in .env.production
+```
 
-# Restart
-./start-production.sh
+### Apache permission issues
+
+```bash
+# Check Apache directories permissions
+ls -la /etc/apache2/sites-available
+ls -la /etc/letsencrypt
+
+# If needed, adjust permissions
+sudo chmod -R 755 /etc/apache2/sites-available
+sudo chmod -R 755 /etc/letsencrypt
 ```
 
 ### Site created but inaccessible
