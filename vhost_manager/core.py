@@ -138,8 +138,13 @@ class ApacheVHostManager:
             ssl (bool): Whether to install SSL certificate
             interactive (bool): Whether to prompt for user input (default: True)
             force (bool): Force creation without prompts (default: False)
+            
+        Returns:
+            dict: {'success': bool, 'message': str, 'error': str or None}
         """
         check_sudo()
+        
+        errors = []  # Collect errors for web interface
         
         # Check if wildcard domain
         is_wildcard = is_wildcard_domain(domain)
@@ -147,27 +152,31 @@ class ApacheVHostManager:
         # Validate inputs
         if is_wildcard:
             if not validate_wildcard_domain(domain):
-                print(f"❌ Invalid wildcard domain name: {domain}")
-                return
+                error_msg = f"Invalid wildcard domain name: {domain}"
+                print(f"❌ {error_msg}")
+                return {'success': False, 'message': error_msg, 'error': error_msg}
             print(f"🌟 Wildcard domain detected: {domain}")
         else:
             if not validate_domain(domain):
-                print(f"❌ Invalid domain name: {domain}")
-                return
+                error_msg = f"Invalid domain name: {domain}"
+                print(f"❌ {error_msg}")
+                return {'success': False, 'message': error_msg, 'error': error_msg}
         
         port_num = validate_port(port)
         if port_num is None:
-            return
+            error_msg = f"Invalid port: {port}"
+            return {'success': False, 'message': error_msg, 'error': error_msg}
         
         # Check if site already exists
         if domain in self.sites:
             if interactive and not force:
                 response = input(f"⚠️  Site {domain} already exists. Replace it? (y/n): ")
                 if response.lower() != 'y':
-                    return
+                    return {'success': False, 'message': 'Operation cancelled', 'error': None}
             elif not force:
-                print(f"❌ Site {domain} already exists. Use force=True to replace.")
-                return
+                error_msg = f"Site {domain} already exists"
+                print(f"❌ {error_msg}")
+                return {'success': False, 'message': error_msg, 'error': error_msg}
         
         # Check if port is in use
         if check_port_in_use(port_num):
@@ -186,21 +195,27 @@ class ApacheVHostManager:
         # Create configuration file
         config_path = self.create_vhost_config(domain, port_num, ssl=False)
         if not config_path:
-            return
+            error_msg = f"Failed to create configuration file for {domain}"
+            errors.append(error_msg)
+            return {'success': False, 'message': error_msg, 'error': '\n'.join(errors)}
         
         # Enable required modules
         self.enable_modules()
         
         # Enable the site
         if not run_command(f"a2ensite {domain}"):
-            print(f"❌ Failed to enable site {domain}")
-            return
+            error_msg = f"Failed to enable site {domain}. Check if Apache Agent is running: sudo systemctl status apache-agent"
+            print(f"❌ {error_msg}")
+            errors.append(error_msg)
+            return {'success': False, 'message': error_msg, 'error': '\n'.join(errors)}
         
         # Test Apache configuration
         if not run_command("apache2ctl configtest"):
-            print("❌ Invalid Apache configuration")
+            error_msg = "Invalid Apache configuration"
+            print(f"❌ {error_msg}")
             run_command("apache2ctl configtest", show_output=True)
-            return
+            errors.append(error_msg)
+            return {'success': False, 'message': error_msg, 'error': '\n'.join(errors)}
         
         # Reload Apache
         if run_command("systemctl reload apache2"):
@@ -261,8 +276,13 @@ class ApacheVHostManager:
             print(f"📁 Config: {config_path}")
             print(f"📝 Logs: /var/log/apache2/{domain}-*.log")
             print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+            
+            return {'success': True, 'message': f'Site {domain} created successfully!', 'error': None}
         else:
-            print("❌ Failed to reload Apache")
+            error_msg = "Failed to reload Apache"
+            print(f"❌ {error_msg}")
+            errors.append(error_msg)
+            return {'success': False, 'message': error_msg, 'error': '\n'.join(errors)}
     
     def delete_site(self, domain):
         """

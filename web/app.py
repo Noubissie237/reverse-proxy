@@ -176,24 +176,25 @@ def create_site():
                 return render_template('create_site.html')
             
             # Try to create the site in non-interactive mode
-            # Note: create_site uses print() instead of raising exceptions
-            # We need to check if it actually worked
-            initial_sites = set(manager.sites.keys())
-            manager.create_site(domain, port, ssl, interactive=False, force=True)
+            result = manager.create_site(domain, port, ssl, interactive=False, force=True)
             
             # Reload config to check if site was actually created
             manager.config_manager.load_config()
             manager.sites = manager.config_manager.sites
             
-            if domain in manager.sites:
+            if result and result.get('success'):
                 flash(f'Site {domain} créé avec succès !', 'success')
+                return redirect(url_for('sites'))
             else:
-                flash(f'Échec de la création du site {domain}. Vérifiez les logs.', 'error')
+                # Afficher l'erreur détaillée
+                error_msg = result.get('error') if result else 'Erreur inconnue'
+                flash(f'Échec de la création du site {domain}', 'error')
+                flash(f'Détails : {error_msg}', 'error')
+                return render_template('create_site.html', error_details=error_msg)
             
-            return redirect(url_for('sites'))
         except Exception as e:
             flash(f'Erreur lors de la création : {str(e)}', 'error')
-            return render_template('create_site.html')
+            return render_template('create_site.html', error_details=str(e))
     
     return render_template('create_site.html')
 
@@ -284,6 +285,33 @@ def api_stats():
         'ssl_sites': ssl_sites,
         'non_ssl_sites': total_sites - ssl_sites
     })
+
+
+@app.route('/logs')
+@login_required
+def logs():
+    """View application logs"""
+    log_files = {
+        'application': '/var/log/vhost-manager/error.log',
+        'agent': '/var/log/vhost-manager/apache-agent.log',
+        'apache_error': '/var/log/apache2/error.log',
+        'apache_access': '/var/log/apache2/access.log'
+    }
+    
+    logs_content = {}
+    for name, path in log_files.items():
+        try:
+            if os.path.exists(path):
+                with open(path, 'r') as f:
+                    # Read last 100 lines
+                    lines = f.readlines()
+                    logs_content[name] = ''.join(lines[-100:])
+            else:
+                logs_content[name] = f"Fichier non trouvé : {path}"
+        except Exception as e:
+            logs_content[name] = f"Erreur de lecture : {str(e)}"
+    
+    return render_template('logs.html', logs=logs_content)
 
 
 @app.route('/ssl-check')

@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}Logs - Apache VHost Manager{% endblock %}
+
+{% block content %}
+<div class="py-10">
+    <header>
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <h1 class="text-3xl font-bold leading-tight tracking-tight text-gray-900">
+                <i class="fas fa-file-alt mr-2"></i>Logs du système
+            </h1>
+        </div>
+    </header>
+    <main>
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-8">
+            <!-- Tabs -->
+            <div class="border-b border-gray-200">
+                <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                    <button onclick="showTab('application')" 
+                            id="tab-application"
+                            class="tab-button border-indigo-500 text-indigo-600 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">
+                        <i class="fas fa-code mr-2"></i>Application
+                    </button>
+                    <button onclick="showTab('agent')" 
+                            id="tab-agent"
+                            class="tab-button border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">
+                        <i class="fas fa-robot mr-2"></i>Apache Agent
+                    </button>
+                    <button onclick="showTab('apache_error')" 
+                            id="tab-apache_error"
+                            class="tab-button border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>Apache Erreurs
+                    </button>
+                    <button onclick="showTab('apache_access')" 
+                            id="tab-apache_access"
+                            class="tab-button border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">
+                        <i class="fas fa-globe mr-2"></i>Apache Accès
+                    </button>
+                </nav>
+            </div>
+
+            <!-- Log Content -->
+            <div class="mt-6">
+                {% for name, content in logs.items() %}
+                <div id="log-{{ name }}" class="log-content {% if name != 'application' %}hidden{% endif %}">
+                    <div class="bg-gray-900 rounded-lg p-4 overflow-auto" style="max-height: 600px;">
+                        <pre class="text-green-400 font-mono text-xs whitespace-pre-wrap">{{ content }}</pre>
+                    </div>
+                    
+                    <div class="mt-4 flex justify-between items-center">
+                        <button onclick="refreshLogs()" 
+                                class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">
+                            <i class="fas fa-sync-alt mr-2"></i>Actualiser
+                        </button>
+                        
+                        <div class="text-sm text-gray-500">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            Dernières 100 lignes
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Help Box -->
+            <div class="mt-6 rounded-md bg-blue-50 p-4">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-info-circle text-blue-400 text-xl"></i>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-sm font-medium text-blue-800">Commandes utiles</h3>
+                        <div class="mt-2 text-sm text-blue-700">
+                            <ul class="list-disc list-inside space-y-1">
+                                <li>Logs de l'agent en temps réel : <code class="bg-blue-100 px-1 rounded">sudo journalctl -u apache-agent -f</code></li>
+                                <li>Logs du conteneur : <code class="bg-blue-100 px-1 rounded">docker compose logs -f</code></li>
+                                <li>Logs Apache en temps réel : <code class="bg-blue-100 px-1 rounded">sudo tail -f /var/log/apache2/error.log</code></li>
+                                <li>Statut de l'agent : <code class="bg-blue-100 px-1 rounded">sudo systemctl status apache-agent</code></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+function showTab(tabName) {
+    // Hide all log contents
+    document.querySelectorAll('.log-content').forEach(el => {
+        el.classList.add('hidden');
+    });
+    
+    // Show selected log content
+    document.getElementById('log-' + tabName).classList.remove('hidden');
+    
+    // Update tab styles
+    document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.classList.remove('border-indigo-500', 'text-indigo-600');
+        btn.classList.add('border-transparent', 'text-gray-500');
+    });
+    
+    document.getElementById('tab-' + tabName).classList.remove('border-transparent', 'text-gray-500');
+    document.getElementById('tab-' + tabName).classList.add('border-indigo-500', 'text-indigo-600');
+}
+
+function refreshLogs() {
+    location.reload();
+}
+
+// Auto-scroll to bottom of logs
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.log-content > div').forEach(el => {
+        el.scrollTop = el.scrollHeight;
+    });
+});
+</script>
+{% endblock %}

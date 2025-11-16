@@ -53,6 +53,10 @@
                                    class="{% if request.endpoint == 'ssl_check' %}bg-indigo-700{% else %}hover:bg-indigo-500{% endif %} text-white rounded-md px-3 py-2 text-sm font-medium">
                                     <i class="fas fa-lock mr-2"></i>SSL
                                 </a>
+                                <a href="{{ url_for('logs') }}" 
+                                   class="{% if request.endpoint == 'logs' %}bg-indigo-700{% else %}hover:bg-indigo-500{% endif %} text-white rounded-md px-3 py-2 text-sm font-medium">
+                                    <i class="fas fa-file-alt mr-2"></i>Logs
+                                </a>
                             </div>
                         </div>
                     </div>

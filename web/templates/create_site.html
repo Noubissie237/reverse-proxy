@@ -13,6 +13,32 @@
     </header>
     <main>
         <div class="mx-auto max-w-3xl sm:px-6 lg:px-8 mt-8">
+            {% if error_details %}
+            <!-- Error Details Box -->
+            <div class="rounded-md bg-red-50 p-4 mb-6">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-exclamation-circle text-red-400 text-xl"></i>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-sm font-medium text-red-800">Détails de l'erreur</h3>
+                        <div class="mt-2 text-sm text-red-700">
+                            <pre class="whitespace-pre-wrap font-mono text-xs bg-red-100 p-3 rounded">{{ error_details }}</pre>
+                        </div>
+                        <div class="mt-4">
+                            <h4 class="text-sm font-medium text-red-800">Solutions possibles :</h4>
+                            <ul class="list-disc list-inside mt-2 space-y-1 text-sm text-red-700">
+                                <li>Vérifiez que l'Apache Agent est démarré : <code class="bg-red-100 px-1 rounded">sudo systemctl status apache-agent</code></li>
+                                <li>Vérifiez les logs de l'agent : <code class="bg-red-100 px-1 rounded">sudo journalctl -u apache-agent -n 50</code></li>
+                                <li>Vérifiez les logs Apache : <code class="bg-red-100 px-1 rounded">sudo tail -f /var/log/apache2/error.log</code></li>
+                                <li>Redémarrez le conteneur : <code class="bg-red-100 px-1 rounded">docker compose restart</code></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
             <form method="POST" action="{{ url_for('create_site') }}" class="space-y-6">
                 <div class="bg-white shadow sm:rounded-lg">
                     <div class="px-4 py-5 sm:p-6">
