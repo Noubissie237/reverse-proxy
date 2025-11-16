@@ -51,8 +51,27 @@ cd reverse-proxy
 
 ```bash
 # Créer un environnement virtuel
-sudo apt install python3.10-venv
 python3 -m venv venv
+```
+Note : Si vous avez un message de ce genre 
+```bash
+The virtual environment was not created successfully because ensurepip is not
+available.  On Debian/Ubuntu systems, you need to install the python3-venv
+package using the following command.
+
+    apt install python3.12-venv
+
+You may need to use sudo with that command.  After installing the python3-venv
+package, recreate your virtual environment.
+
+Failing command: /root/reverse-proxy/venv/bin/python3
+```
+installez le package python3-venv avec la commande indiquée dans le message :
+```bash
+sudo apt install python3.x-venv # remplacez x par sa valeur indiquée dans le message plus haut
+```
+
+```bash
 source venv/bin/activate
 
 # Installer les dépendances
@@ -448,8 +467,27 @@ cd reverse-proxy
 
 ```bash
 # Create virtual environment
-sudo apt install python3.10-venv
 python3 -m venv venv
+```
+Note : If you get this message
+```bash
+The virtual environment was not created successfully because ensurepip is not
+available.  On Debian/Ubuntu systems, you need to install the python3-venv
+package using the following command.
+
+    apt install python3.12-venv
+
+You may need to use sudo with that command.  After installing the python3-venv
+package, recreate your virtual environment.
+
+Failing command: /root/reverse-proxy/venv/bin/python3
+```
+install the package python3-venv with the command indicated in the message :
+```bash
+sudo apt install python3.x-venv # replace x with the value indicated in the message above
+```
+
+```bash
 source venv/bin/activate
 
 # Install dependencies
