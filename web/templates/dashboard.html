@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Apache VHost Manager{% endblock %}
+
+{% block content %}
+<div class="py-10">
+    <header>
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <h1 class="text-3xl font-bold leading-tight tracking-tight text-gray-900">
+                <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
+            </h1>
+        </div>
+    </header>
+    <main>
+        <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <!-- Stats Grid -->
+            <div class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                <!-- Total Sites -->
+                <div class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6 fade-in">
+                    <dt class="truncate text-sm font-medium text-gray-500">
+                        <i class="fas fa-globe mr-2"></i>Total Sites
+                    </dt>
+                    <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900">
+                        {{ stats.total_sites }}
+                    </dd>
+                </div>
+
+                <!-- Active Sites -->
+                <div class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6 fade-in" style="animation-delay: 0.1s">
+                    <dt class="truncate text-sm font-medium text-gray-500">
+                        <i class="fas fa-check-circle mr-2 text-green-500"></i>Sites Actifs
+                    </dt>
+                    <dd class="mt-1 text-3xl font-semibold tracking-tight text-green-600">
+                        {{ stats.active_sites }}
+                    </dd>
+                </div>
+
+                <!-- SSL Sites -->
+                <div class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6 fade-in" style="animation-delay: 0.2s">
+                    <dt class="truncate text-sm font-medium text-gray-500">
+                        <i class="fas fa-lock mr-2 text-blue-500"></i>SSL Activé
+                    </dt>
+                    <dd class="mt-1 text-3xl font-semibold tracking-tight text-blue-600">
+                        {{ stats.ssl_sites }}
+                    </dd>
+                </div>
+
+                <!-- SSL Warnings -->
+                <div class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6 fade-in" style="animation-delay: 0.3s">
+                    <dt class="truncate text-sm font-medium text-gray-500">
+                        <i class="fas fa-exclamation-triangle mr-2 text-yellow-500"></i>Alertes SSL
+                    </dt>
+                    <dd class="mt-1 text-3xl font-semibold tracking-tight {% if stats.ssl_warnings > 0 %}text-yellow-600{% else %}text-gray-900{% endif %}">
+                        {{ stats.ssl_warnings }}
+                    </dd>
+                </div>
+            </div>
+
+            <!-- Alerts Section -->
+            {% if not stats.has_sudo %}
+            <div class="mt-8 rounded-md bg-yellow-50 p-4 fade-in">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-exclamation-triangle text-yellow-400 text-xl"></i>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-sm font-medium text-yellow-800">Privilèges sudo requis</h3>
+                        <div class="mt-2 text-sm text-yellow-700">
+                            <p>L'application ne s'exécute pas avec les privilèges sudo. Certaines fonctionnalités peuvent ne pas fonctionner correctement.</p>
+                            <p class="mt-1"><strong>Solution :</strong> Redémarrez avec <code class="bg-yellow-100 px-1 rounded">sudo python3 web/app.py</code></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if ssl_warnings %}
+            <div class="mt-8 rounded-md bg-red-50 p-4 fade-in">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-exclamation-circle text-red-400 text-xl"></i>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-sm font-medium text-red-800">Certificats SSL expirant bientôt</h3>
+                        <div class="mt-2 text-sm text-red-700">
+                            <ul class="list-disc list-inside space-y-1">
+                                {% for warning in ssl_warnings %}
+                                <li><strong>{{ warning.domain }}</strong> : {{ warning.days }} jours restants</li>
+                                {% endfor %}
+                            </ul>
+                            <p class="mt-2">
+                                <a href="{{ url_for('ssl_check') }}" class="font-medium text-red-700 underline hover:text-red-600">
+                                    Voir tous les certificats <i class="fas fa-arrow-right ml-1"></i>
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Quick Actions -->
+            <div class="mt-8">
+                <h2 class="text-lg font-medium text-gray-900 mb-4">
+                    <i class="fas fa-bolt mr-2"></i>Actions Rapides
+                </h2>
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                    <a href="{{ url_for('create_site') }}" 
+                       class="relative block rounded-lg border-2 border-dashed border-gray-300 p-6 text-center hover:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all">
+                        <i class="fas fa-plus-circle text-3xl text-indigo-600"></i>
+                        <span class="mt-2 block text-sm font-medium text-gray-900">Créer un site</span>
+                    </a>
+
+                    <a href="{{ url_for('sites') }}" 
+                       class="relative block rounded-lg border-2 border-dashed border-gray-300 p-6 text-center hover:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all">
+                        <i class="fas fa-list text-3xl text-indigo-600"></i>
+                        <span class="mt-2 block text-sm font-medium text-gray-900">Voir tous les sites</span>
+                    </a>
+
+                    <a href="{{ url_for('monitoring') }}" 
+                       class="relative block rounded-lg border-2 border-dashed border-gray-300 p-6 text-center hover:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all">
+                        <i class="fas fa-chart-line text-3xl text-indigo-600"></i>
+                        <span class="mt-2 block text-sm font-medium text-gray-900">Monitoring</span>
+                    </a>
+
+                    <a href="{{ url_for('ssl_check') }}" 
+                       class="relative block rounded-lg border-2 border-dashed border-gray-300 p-6 text-center hover:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all">
+                        <i class="fas fa-shield-alt text-3xl text-indigo-600"></i>
+                        <span class="mt-2 block text-sm font-medium text-gray-900">Vérifier SSL</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- System Info -->
+            <div class="mt-8 bg-white shadow sm:rounded-lg">
+                <div class="px-4 py-5 sm:p-6">
+                    <h3 class="text-lg font-medium leading-6 text-gray-900">
+                        <i class="fas fa-info-circle mr-2"></i>Informations Système
+                    </h3>
+                    <div class="mt-5 border-t border-gray-200">
+                        <dl class="divide-y divide-gray-200">
+                            <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5">
+                                <dt class="text-sm font-medium text-gray-500">Version</dt>
+                                <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">{{ version }}</dd>
+                            </div>
+                            <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5">
+                                <dt class="text-sm font-medium text-gray-500">Privilèges</dt>
+                                <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
+                                    {% if stats.has_sudo %}
+                                        <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+                                            <i class="fas fa-check mr-1"></i> Sudo actif
+                                        </span>
+                                    {% else %}
+                                        <span class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800">
+                                            <i class="fas fa-times mr-1"></i> Pas de sudo
+                                        </span>
+                                    {% endif %}
+                                </dd>
+                            </div>
+                            <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5">
+                                <dt class="text-sm font-medium text-gray-500">Dernière mise à jour</dt>
+                                <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">{{ now.strftime('%Y-%m-%d %H:%M:%S') }}</dd>
+                            </div>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

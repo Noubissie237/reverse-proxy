@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}Monitoring - Apache VHost Manager{% endblock %}
+
+{% block content %}
+<div class="py-10">
+    <header>
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <h1 class="text-3xl font-bold leading-tight tracking-tight text-gray-900">
+                <i class="fas fa-chart-line mr-2"></i>Monitoring
+            </h1>
+            <button onclick="refreshStatus()" 
+                    class="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">
+                <i class="fas fa-sync-alt mr-2"></i>Actualiser
+            </button>
+        </div>
+    </header>
+    <main>
+        <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 mt-8">
+            {% if sites %}
+            <div class="space-y-4">
+                {% for site in sites %}
+                <div class="bg-white shadow sm:rounded-lg overflow-hidden fade-in">
+                    <div class="px-4 py-5 sm:p-6">
+                        <div class="flex items-center justify-between">
+                            <div class="flex-1">
+                                <h3 class="text-lg font-medium text-gray-900">
+                                    <i class="fas fa-globe mr-2"></i>{{ site.domain }}
+                                </h3>
+                                <p class="mt-1 text-sm text-gray-500">Port: {{ site.port }}</p>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                {% if site.apache_enabled and site.port_active %}
+                                <span class="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-800">
+                                    <i class="fas fa-check-circle mr-1"></i>En ligne
+                                </span>
+                                {% else %}
+                                <span class="inline-flex items-center rounded-full bg-red-100 px-3 py-1 text-sm font-medium text-red-800">
+                                    <i class="fas fa-times-circle mr-1"></i>Hors ligne
+                                </span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+                            <!-- Apache Status -->
+                            <div class="rounded-lg border border-gray-200 p-4">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0">
+                                        {% if site.apache_enabled %}
+                                        <i class="fas fa-check-circle text-green-500 text-2xl"></i>
+                                        {% else %}
+                                        <i class="fas fa-times-circle text-red-500 text-2xl"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-sm font-medium text-gray-500">Apache</p>
+                                        <p class="text-sm text-gray-900">
+                                            {% if site.apache_enabled %}Activé{% else %}Désactivé{% endif %}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Port Status -->
+                            <div class="rounded-lg border border-gray-200 p-4">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0">
+                                        {% if site.port_active %}
+                                        <i class="fas fa-plug text-green-500 text-2xl"></i>
+                                        {% else %}
+                                        <i class="fas fa-plug text-red-500 text-2xl"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-sm font-medium text-gray-500">Service</p>
+                                        <p class="text-sm text-gray-900">
+                                            {% if site.port_active %}Actif{% else %}Inactif{% endif %}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- SSL Status -->
+                            <div class="rounded-lg border border-gray-200 p-4">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0">
+                                        {% if site.ssl_enabled %}
+                                            {% if site.ssl_valid %}
+                                            <i class="fas fa-lock text-green-500 text-2xl"></i>
+                                            {% else %}
+                                            <i class="fas fa-lock text-red-500 text-2xl"></i>
+                                            {% endif %}
+                                        {% else %}
+                                        <i class="fas fa-lock-open text-gray-400 text-2xl"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-sm font-medium text-gray-500">SSL</p>
+                                        <p class="text-sm text-gray-900">
+                                            {% if site.ssl_enabled %}
+                                                {% if site.ssl_days_remaining %}
+                                                    {{ site.ssl_days_remaining }} jours
+                                                {% else %}
+                                                    Erreur
+                                                {% endif %}
+                                            {% else %}
+                                                Non configuré
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-12">
+                <i class="fas fa-inbox text-gray-400 text-6xl"></i>
+                <h3 class="mt-2 text-sm font-semibold text-gray-900">Aucun site à monitorer</h3>
+                <p class="mt-1 text-sm text-gray-500">Créez un site pour commencer le monitoring.</p>
+            </div>
+            {% endif %}
+        </div>
+    </main>
+</div>
+
+<script>
+function refreshStatus() {
+    window.location.reload();
+}
+
+// Auto-refresh every 30 seconds
+setInterval(refreshStatus, 30000);
+</script>
+{% endblock %}

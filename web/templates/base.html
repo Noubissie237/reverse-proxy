@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full bg-gray-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Apache VHost Manager{% endblock %}</title>
+    
+    <!-- TailwindCSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Custom animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+    </style>
+    
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="h-full">
+    <div class="min-h-full">
+        <!-- Navigation -->
+        {% if session.logged_in %}
+        <nav class="bg-indigo-600">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="flex h-16 items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-server text-white text-2xl"></i>
+                        </div>
+                        <div class="hidden md:block">
+                            <div class="ml-10 flex items-baseline space-x-4">
+                                <a href="{{ url_for('dashboard') }}" 
+                                   class="{% if request.endpoint == 'dashboard' %}bg-indigo-700{% else %}hover:bg-indigo-500{% endif %} text-white rounded-md px-3 py-2 text-sm font-medium">
+                                    <i class="fas fa-home mr-2"></i>Dashboard
+                                </a>
+                                <a href="{{ url_for('sites') }}" 
+                                   class="{% if request.endpoint in ['sites', 'create_site'] %}bg-indigo-700{% else %}hover:bg-indigo-500{% endif %} text-white rounded-md px-3 py-2 text-sm font-medium">
+                                    <i class="fas fa-globe mr-2"></i>Sites
+                                </a>
+                                <a href="{{ url_for('monitoring') }}" 
+                                   class="{% if request.endpoint == 'monitoring' %}bg-indigo-700{% else %}hover:bg-indigo-500{% endif %} text-white rounded-md px-3 py-2 text-sm font-medium">
+                                    <i class="fas fa-chart-line mr-2"></i>Monitoring
+                                </a>
+                                <a href="{{ url_for('ssl_check') }}" 
+                                   class="{% if request.endpoint == 'ssl_check' %}bg-indigo-700{% else %}hover:bg-indigo-500{% endif %} text-white rounded-md px-3 py-2 text-sm font-medium">
+                                    <i class="fas fa-lock mr-2"></i>SSL
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hidden md:block">
+                        <div class="ml-4 flex items-center md:ml-6">
+                            <span class="text-white text-sm mr-4">
+                                <i class="fas fa-user mr-2"></i>{{ session.username }}
+                            </span>
+                            <a href="{{ url_for('logout') }}" 
+                               class="text-white hover:bg-indigo-500 rounded-md px-3 py-2 text-sm font-medium">
+                                <i class="fas fa-sign-out-alt mr-2"></i>Déconnexion
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        {% endif %}
+
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-4">
+                    {% for category, message in messages %}
+                        <div class="fade-in rounded-md p-4 mb-4 {% if category == 'error' %}bg-red-50 text-red-800{% elif category == 'success' %}bg-green-50 text-green-800{% else %}bg-blue-50 text-blue-800{% endif %}">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    {% if category == 'error' %}
+                                        <i class="fas fa-exclamation-circle"></i>
+                                    {% elif category == 'success' %}
+                                        <i class="fas fa-check-circle"></i>
+                                    {% else %}
+                                        <i class="fas fa-info-circle"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm font-medium">{{ message }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Page content -->
+        <main>
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-12">
+        <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+            <p class="text-center text-sm text-gray-500">
+                Apache VHost Manager v{{ version }} | 
+                <a href="https://github.com/Noubissie237/reverse-proxy" target="_blank" class="text-indigo-600 hover:text-indigo-500">
+                    <i class="fab fa-github"></i> GitHub
+                </a>
+            </p>
+        </div>
+    </footer>
+
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>
