@@ -5,64 +5,52 @@
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Version](https://img.shields.io/badge/version-1.5.0-orange)
 
+[English](#english) | [Français](#français)
+
+---
+
+<a name="français"></a>
+## 🇫🇷 Version Française
+
 **Gestionnaire automatisé de Virtual Hosts Apache avec interface web moderne**
 
-Automatisez la création et la gestion de Virtual Hosts Apache avec SSL/HTTPS automatique, interface web intuitive et monitoring en temps réel.
+Gérez vos Virtual Hosts Apache en quelques clics grâce à une interface web intuitive. SSL/HTTPS automatique, monitoring en temps réel, et bien plus encore.
 
----
+### ✨ Fonctionnalités
 
-## ✨ Fonctionnalités
+- 🖥️ **Interface Web Moderne** : Gérez tout depuis votre navigateur
+- 📊 **Dashboard Intuitif** : Vue d'ensemble avec statistiques en temps réel
+- 🌐 **Gestion Visuelle** : Créer, lister, supprimer des sites en quelques clics
+- 🔒 **SSL Automatique** : Certificats Let's Encrypt gratuits et automatiques
+- 📈 **Monitoring Live** : Statut Apache, ports, SSL avec auto-refresh
+- 🔐 **Sécurisé** : Authentification, HTTPS forcé, en-têtes de sécurité
+- 🎨 **Design Responsive** : Interface moderne avec TailwindCSS
+- ⚡ **Certificats Wildcard** : Support `*.example.com` pour tous les sous-domaines
+- 📝 **Logs Séparés** : Un fichier de log par domaine
+- 🔄 **Renouvellement Auto** : Certificats SSL renouvelés automatiquement
 
-### 🖥️ Interface Web
-- 📊 **Dashboard moderne** : Vue d'ensemble avec statistiques en temps réel
-- 🌐 **Gestion visuelle** : Créer, lister, supprimer des sites via navigateur
-- 📈 **Monitoring live** : Statut Apache, ports, SSL avec auto-refresh
-- 🔒 **Vérification SSL** : Suivi des certificats et alertes d'expiration
-- 🔐 **Authentification** : Accès sécurisé par login/password
-- 🎨 **Design responsive** : Interface moderne avec TailwindCSS
-
-### 🛠️ Ligne de commande (CLI)
-- ✅ **Création automatisée** de Virtual Hosts Apache
-- ✅ **SSL/HTTPS automatique** avec Let's Encrypt (certificats gratuits)
-- ✅ **Certificats Wildcard** (`*.example.com`) pour tous les sous-domaines
-- ✅ **Redirection automatique** HTTP → HTTPS
-- ✅ **Proxy inverse** vers n'importe quel port local
-- ✅ **Gestion complète** : créer, supprimer, lister, monitorer
-- ✅ **Logs séparés** par domaine
-- ✅ **Renouvellement automatique** des certificats SSL
-- ✅ **En-têtes de sécurité** inclus
-- ✅ **Architecture modulaire** : Code organisé et maintenable
-
----
-
-## 📋 Prérequis
+### 📋 Prérequis
 
 - **Serveur Linux** (Ubuntu/Debian 20.04+ recommandé)
 - **Apache2** installé et configuré
-- **Git** installé (`sudo apt install git`)
 - **Python 3.9+** avec pip
 - **Privilèges sudo**
 - **DNS configuré** (enregistrement A pointant vers votre serveur)
 - **Ports 80 et 443 ouverts** dans le pare-feu
 
----
+### 🚀 Installation
 
-## 🚀 Installation Rapide
-
-### 1. Cloner le dépôt
+#### 1. Cloner le dépôt
 
 ```bash
-# Cloner le dépôt GitHub
 git clone https://github.com/Noubissie237/reverse-proxy.git
-
-# Accéder au répertoire
 cd reverse-proxy
 ```
 
-### 2. Installer les dépendances
+#### 2. Installer les dépendances
 
 ```bash
-# Créer un environnement virtuel (recommandé)
+# Créer un environnement virtuel
 python3 -m venv venv
 source venv/bin/activate
 
@@ -70,811 +58,524 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-**Dépendances installées :**
-- `Flask` : Framework web pour l'interface
-- `Gunicorn` : Serveur WSGI pour la production
-- `requests` : Requêtes HTTP
-- `email-validator` : Validation des emails
-- `pyOpenSSL` : Gestion SSL/TLS
-
-### 3. Configuration SSL initiale (une seule fois)
+#### 3. Configuration SSL initiale
 
 ```bash
 # Rendre les scripts exécutables
-chmod +x setup_ssl.sh manage.py check_dns.py start-web.sh start-production.sh
+chmod +x setup_ssl.sh start-web.sh start-production.sh
 
 # Installer Certbot et configurer le renouvellement automatique
 sudo ./setup_ssl.sh
 ```
 
----
+### 🎯 Utilisation
 
-## 🎯 Utilisation
+#### Démarrer l'interface web
 
-### 🌐 Option 1 : Interface Web (Recommandé)
-
-#### Démarrage en mode développement
-
+**Mode développement :**
 ```bash
-# Lancer l'interface web
 ./start-web.sh
-
-# Ou manuellement
-source venv/bin/activate
-python3 web/app.py
 ```
 
-**Accès :** `http://localhost:5000`
-
-**Identifiants par défaut :**
-- Username : `admin`
-- Password : `admin`
-
-⚠️ **Changez ces identifiants en production !**
-
-#### Utilisation de l'interface
-
-1. **Se connecter** à `http://localhost:5000`
-2. **Dashboard** : Vue d'ensemble des sites et statistiques
-3. **Créer un site** :
-   - Cliquer sur "Sites" → "Nouveau site"
-   - Remplir : domaine, port, SSL (optionnel)
-   - Cliquer sur "Créer le site"
-4. **Monitoring** : Voir le statut en temps réel
-5. **SSL Check** : Vérifier les certificats et dates d'expiration
-
-#### Démarrage en production
-
+**Mode production :**
 ```bash
 # Configurer la sécurité
 cp .env.example .env.production
 nano .env.production  # Modifier SECRET_KEY et ADMIN_PASSWORD
 
-# Lancer en mode production (avec Gunicorn)
+# Lancer
 ./start-production.sh
 ```
 
-📚 **Guide complet :** Voir [web/README.md](web/README.md) et [PRODUCTION.md](PRODUCTION.md)
+#### Accéder à l'interface
 
----
+1. **Ouvrir le navigateur** : `http://localhost:5000`
+2. **Se connecter** :
+   - Username : `admin`
+   - Password : `admin` (⚠️ à changer en production !)
 
-### 💻 Option 2 : Ligne de commande (CLI)
+#### Créer un site
 
-#### Vérifier la configuration DNS (recommandé)
-
-```bash
-python3 check_dns.py <domaine>
-```
-
-#### Créer un nouveau site
-
-```bash
-sudo python3 manage.py create <domaine> <port>
-```
-
-**Exemple :**
-```bash
-# Vérifier le DNS
-python3 check_dns.py monsite.com
-
-# Créer le site avec SSL
-sudo python3 manage.py create monsite.com 8080
-```
-
-Le script vous demandera :
-1. Votre email (pour Let's Encrypt, première fois seulement)
-2. Si vous voulez installer le certificat SSL (recommandé : y)
+1. **Lancer votre application** (ex: sur le port 8080)
+2. **Dans l'interface web** :
+   - Cliquer sur **"Sites"** → **"Nouveau site"**
+   - **Domaine** : `monsite.com`
+   - **Port** : `8080`
+   - **SSL** : ✅ Cocher pour activer HTTPS
+   - Cliquer sur **"Créer le site"**
+3. **Tester** : Ouvrir `https://monsite.com`
 
 **Résultat :**
-- `http://monsite.com` → redirige vers `https://monsite.com`
-- `https://monsite.com` → proxy vers `localhost:8080`
-- Certificat SSL automatique et valide
+- ✅ `http://monsite.com` → redirige vers `https://monsite.com`
+- ✅ `https://monsite.com` → proxy vers votre app sur `localhost:8080`
+- ✅ Certificat SSL valide et automatique
 
-#### Lister tous les sites
+#### Fonctionnalités de l'interface
+
+| Page | Description |
+|------|-------------|
+| **Dashboard** | Vue d'ensemble : nombre de sites, alertes SSL, statistiques |
+| **Sites** | Liste de tous vos sites avec statut (actif/inactif) |
+| **Nouveau site** | Formulaire de création : domaine + port + SSL |
+| **Monitoring** | Statut en temps réel : Apache, services, SSL (auto-refresh 30s) |
+| **SSL Check** | Vérification des certificats et dates d'expiration |
+
+### 📖 Exemples
+
+#### Exemple 1 : Site e-commerce
 
 ```bash
-python3 manage.py list
+# 1. Lancer votre app Node.js
+npm start  # Écoute sur le port 3000
+
+# 2. Ouvrir l'interface : http://localhost:5000
+# 3. Créer le site :
+#    - Domaine : boutique.com
+#    - Port : 3000
+#    - SSL : ✅
 ```
 
-#### Voir le statut détaillé
+#### Exemple 2 : API Backend
 
 ```bash
-python3 manage.py status
+# 1. Lancer votre API Python
+python api.py  # Écoute sur le port 8080
+
+# 2. Dans l'interface web :
+#    - Domaine : api.monapp.com
+#    - Port : 8080
+#    - SSL : ✅
 ```
 
-Affiche pour chaque site :
-- ✅ Statut Apache (activé/désactivé)
-- 🔌 Statut du service sur le port
-- 🔒 Statut SSL et jours restants avant expiration
-- 📅 Date de création
+#### Exemple 3 : Certificat Wildcard
 
-#### Vérifier les certificats SSL
+Pour gérer plusieurs sous-domaines avec un seul certificat :
 
 ```bash
-python3 manage.py check-ssl
-```
-
-Affiche :
-- 📜 Liste de tous les certificats SSL
-- 📅 Date d'expiration
-- ⏰ Jours restants
-- ⚠️ Alertes si expiration < 30 jours
-
-#### Voir les statistiques
-
-```bash
-python3 manage.py stats
-```
-
-Affiche :
-- 📊 Nombre total de sites
-- ✅ Sites actifs vs inactifs
-- 🔒 Répartition SSL/non-SSL
-- 🔌 Distribution des ports
-
-#### Supprimer un site
-
-```bash
-sudo python3 manage.py delete <domaine>
-```
-
-#### Renouveler les certificats SSL
-
-```bash
-sudo python3 manage.py renew-ssl
-```
-
-#### Créer un site sans SSL
-
-```bash
-sudo python3 manage.py create <domaine> <port> --no-ssl
-```
-
-#### Afficher la version
-
-```bash
-python3 manage.py version
-```
-
----
-
-## 🌟 Certificats Wildcard
-
-Créer un certificat pour tous les sous-domaines :
-
-```bash
-# Créer un site avec wildcard
-sudo python3 manage.py create '*.example.com' 8080
-
-# Ou installer uniquement le certificat wildcard
+# Via CLI (nécessite validation DNS manuelle)
 sudo python3 manage.py install-wildcard-ssl '*.example.com'
+
+# Puis créer les sites dans l'interface web :
+# - api.example.com → port 8080
+# - app.example.com → port 3000
+# - admin.example.com → port 5000
 ```
 
-**Avantages :**
-- Un seul certificat pour tous les sous-domaines
-- `api.example.com`, `app.example.com`, `admin.example.com`, etc.
+📚 **Guide complet** : [WILDCARD_SSL_GUIDE.md](WILDCARD_SSL_GUIDE.md)
 
-**Note :** Nécessite validation DNS manuelle (ajout d'un TXT record).  
-📚 **Guide complet :** [WILDCARD_SSL_GUIDE.md](WILDCARD_SSL_GUIDE.md)
+### 🔧 Configuration Avancée
 
----
-
-## 📖 Exemples Pratiques
-
-### Exemple 1 : Site e-commerce avec interface web
-
-1. **Lancer votre application** :
-   ```bash
-   # Application Node.js sur le port 3000
-   npm start
-   ```
-
-2. **Ouvrir l'interface web** : `http://localhost:5000`
-
-3. **Créer le site** :
-   - Domaine : `boutique.com`
-   - Port : `3000`
-   - SSL : ✅ Activé
-
-4. **Résultat** :
-   - `http://boutique.com` → redirige vers `https://boutique.com`
-   - `https://boutique.com` → proxy vers `localhost:3000`
-   - Certificat SSL automatique et valide
-
-### Exemple 2 : API Backend (CLI)
+#### Sécuriser l'interface web
 
 ```bash
-# API sur le port 8080
-python3 check_dns.py api.monapp.com
-sudo python3 manage.py create api.monapp.com 8080
-```
-
-### Exemple 3 : Application React
-
-```bash
-# App React en développement sur le port 3000
-python3 check_dns.py app.exemple.com
-sudo python3 manage.py create app.exemple.com 3000
-```
-
-### Exemple 4 : Plusieurs sous-domaines avec Wildcard
-
-```bash
-# Créer un certificat wildcard
-sudo python3 manage.py install-wildcard-ssl '*.monapp.com'
-
-# Créer plusieurs sites
-sudo python3 manage.py create api.monapp.com 8080 --no-ssl
-sudo python3 manage.py create app.monapp.com 3000 --no-ssl
-sudo python3 manage.py create admin.monapp.com 5000 --no-ssl
-```
-
----
-
-## 📂 Architecture du Projet
-
-```
-reverse-proxy/
-├── manage.py                    # Point d'entrée CLI principal
-├── check_dns.py                 # Vérification DNS
-├── setup_ssl.sh                 # Configuration SSL initiale
-├── start-web.sh                 # Démarrage interface web (dev)
-├── start-production.sh          # Démarrage production (Gunicorn)
-├── requirements.txt             # Dépendances Python
-├── .env.example                 # Template configuration
-├── .env.production              # Configuration production
-│
-├── vhost_manager/               # Package principal (modulaire)
-│   ├── __init__.py             # Exports du package
-│   ├── core.py                 # Classe ApacheVHostManager
-│   ├── config.py               # Gestion configuration JSON
-│   ├── validation.py           # Validation domaines/ports
-│   ├── ssl.py                  # Gestion certificats SSL
-│   ├── monitoring.py           # Monitoring et statistiques
-│   ├── utils.py                # Fonctions utilitaires
-│   └── README.md               # Documentation du package
-│
-├── web/                         # Interface web Flask
-│   ├── app.py                  # Application Flask
-│   ├── requirements.txt        # Dépendances web
-│   ├── README.md               # Documentation interface web
-│   ├── static/                 # Fichiers statiques
-│   │   ├── css/
-│   │   ├── js/
-│   │   └── img/
-│   └── templates/              # Templates Jinja2
-│       ├── base.html           # Template de base
-│       ├── login.html          # Page de connexion
-│       ├── dashboard.html      # Dashboard principal
-│       ├── sites.html          # Liste des sites
-│       ├── create_site.html    # Formulaire création
-│       ├── monitoring.html     # Page monitoring
-│       └── ssl_check.html      # Vérification SSL
-│
-├── tests/                       # Tests automatisés
-│   ├── test_validation.py
-│   ├── test_config.py
-│   └── test_core.py
-│
-├── docs/                        # Documentation
-│   ├── PRODUCTION.md           # Guide déploiement production
-│   ├── WILDCARD_SSL_GUIDE.md   # Guide certificats wildcard
-│   └── API.md                  # Documentation API (à venir)
-│
-└── vhost-manager-web.service   # Service systemd
-```
-
----
-
-## 📊 Structure des Fichiers Générés
-
-```
-/etc/apache2/sites-available/
-├── monsite.com.conf              # Configuration Apache
-└── api.monapp.com.conf           # Configuration Apache
-
-/var/log/apache2/
-├── monsite.com-access.log        # Logs d'accès HTTP
-├── monsite.com-error.log         # Logs d'erreur HTTP
-├── monsite.com-ssl-access.log    # Logs d'accès HTTPS
-└── monsite.com-ssl-error.log     # Logs d'erreur HTTPS
-
-/etc/letsencrypt/live/
-├── monsite.com/                  # Certificats SSL
-│   ├── fullchain.pem
-│   ├── privkey.pem
-│   └── cert.pem
-└── api.monapp.com/               # Certificats SSL
-
-/etc/vhost_manager.json           # Configuration du gestionnaire
-
-/var/log/vhost-manager/           # Logs de l'interface web
-├── manager.log                   # Logs généraux
-├── access.log                    # Logs HTTP (Gunicorn)
-└── error.log                     # Logs d'erreur (Gunicorn)
-```
-
----
-
-## 🔧 Configuration Avancée
-
-### Modifier la configuration d'un site
-
-Les fichiers de configuration se trouvent dans `/etc/apache2/sites-available/` :
-
-```bash
-sudo nano /etc/apache2/sites-available/monsite.com.conf
-sudo systemctl reload apache2
-```
-
-### En-têtes de sécurité inclus
-
-Chaque site HTTPS est configuré avec :
-- `Strict-Transport-Security` (HSTS) : 1 an
-- `X-Frame-Options: DENY`
-- `X-Content-Type-Options: nosniff`
-- `X-XSS-Protection: 1; mode=block`
-
-### Personnaliser l'interface web
-
-```bash
-# Modifier les identifiants
-nano .env.production
-
-# Générer une clé secrète
+# 1. Générer une clé secrète
 python3 -c 'import secrets; print(secrets.token_hex(32))'
 
-# Modifier le port (défaut: 5000)
-PORT=8080 python3 web/app.py
+# 2. Modifier .env.production
+nano .env.production
 ```
-
-### Logs et surveillance
 
 ```bash
-# Logs Apache en temps réel
-sudo tail -f /var/log/apache2/monsite.com-access.log
-
-# Logs de l'interface web
-sudo tail -f /var/log/vhost-manager/access.log
-
-# Logs d'erreurs SSL
-sudo tail -f /var/log/apache2/monsite.com-ssl-error.log
+SECRET_KEY=<votre_clé_générée>
+ADMIN_USERNAME=votre_admin
+ADMIN_PASSWORD=MotDePasseFort123!
+VHOST_VERBOSE=0  # Mode silencieux
 ```
 
----
+#### Installer comme service systemd
 
-## 🔄 Flux de Travail Complet
+```bash
+# Copier le fichier service
+sudo cp vhost-manager-web.service /etc/systemd/system/
 
-### Configuration d'un nouveau domaine
+# Activer et démarrer
+sudo systemctl daemon-reload
+sudo systemctl enable vhost-manager-web
+sudo systemctl start vhost-manager-web
 
-1. **Configurer le DNS** : Créer un enregistrement A pointant vers votre serveur
-2. **Attendre la propagation DNS** (quelques minutes à quelques heures)
-3. **Vérifier le DNS** :
+# Vérifier le statut
+sudo systemctl status vhost-manager-web
+```
+
+#### Créer un reverse proxy pour l'interface
+
+Pour accéder à l'interface via HTTPS :
+
+```bash
+# Via CLI
+sudo python3 manage.py create admin.votredomaine.com 5000
+
+# Puis accéder via : https://admin.votredomaine.com
+```
+
+### 🛠️ Dépannage
+
+#### L'interface web ne démarre pas
+
+```bash
+# Vérifier les logs
+sudo tail -f /var/log/vhost-manager/error.log
+
+# Relancer
+./start-web.sh
+```
+
+#### Erreur "ModuleNotFoundError: No module named 'flask'"
+
+```bash
+# Utiliser le script qui gère le venv automatiquement
+./start-web.sh
+
+# Ou activer le venv manuellement
+source venv/bin/activate
+python3 web/app.py
+```
+
+#### Site créé mais inaccessible
+
+1. **Vérifier le DNS** :
    ```bash
-   python3 check_dns.py nouveausite.com
+   python3 check_dns.py monsite.com
    ```
-4. **Créer le Virtual Host** :
-   
-   **Via l'interface web :**
-   - Ouvrir `http://localhost:5000`
-   - Sites → Nouveau site
-   - Remplir le formulaire
-   
-   **Via CLI :**
+
+2. **Vérifier que l'app tourne** :
    ```bash
-   sudo python3 manage.py create nouveausite.com 8080
+   curl localhost:8080
    ```
 
-5. **Tester** : Naviguer vers `https://nouveausite.com`
+3. **Voir les logs Apache** :
+   ```bash
+   sudo tail -f /var/log/apache2/monsite.com-error.log
+   ```
 
-### Vérification
+4. **Vérifier dans l'interface** :
+   - Monitoring → Voir le statut du service
 
-```bash
-# Vérifier que le site est actif
-sudo a2query -s
-apache2ctl -S
-
-# Tester la configuration
-sudo apache2ctl configtest
-
-# Vérifier les certificats
-sudo certbot certificates
-
-# Via l'interface web
-# → Monitoring → Voir le statut en temps réel
-```
-
----
-
-## 🛠️ Dépannage
-
-### Erreur "DNS not found"
-
-```bash
-# Vérifier que votre enregistrement DNS A pointe vers votre serveur
-dig monsite.com
-
-# Attendre la propagation DNS (peut prendre jusqu'à 48h)
-# Utiliser un vérificateur en ligne : https://dnschecker.org
-```
-
-### Erreur de certificat SSL
+#### Certificat SSL non créé
 
 ```bash
 # Vérifier les logs Let's Encrypt
 sudo tail -f /var/log/letsencrypt/letsencrypt.log
 
-# Forcer le renouvellement
-sudo certbot renew --force-renewal
+# Vérifier que le DNS pointe vers votre serveur
+python3 check_dns.py monsite.com
 
-# Vérifier la configuration Apache
-sudo apache2ctl configtest
+# Vérifier les ports
+sudo ufw status
 ```
 
-### Site inaccessible
+### 📚 Documentation Complète
 
-```bash
-# Vérifier si le service sur le port fonctionne
-curl localhost:8080
+- 📖 [Guide de Production](PRODUCTION.md) - Déploiement en production
+- 🌐 [Interface Web](web/README.md) - Documentation de l'interface
+- 🔒 [Certificats Wildcard](WILDCARD_SSL_GUIDE.md) - Guide wildcard SSL
+- 📦 [Package vhost_manager](vhost_manager/README.md) - Documentation du package
 
-# Vérifier les logs Apache
-sudo tail -f /var/log/apache2/error.log
-
-# Vérifier le statut via l'interface web
-# → Monitoring → Voir les détails
-```
-
-### Port déjà utilisé
-
-```bash
-# Voir quels ports sont utilisés
-sudo netstat -tulpn | grep :8080
-sudo lsof -i :8080
-
-# Tuer le processus si nécessaire
-sudo kill -9 <PID>
-```
-
-### Interface web inaccessible
-
-```bash
-# Vérifier que Flask tourne
-ps aux | grep python
-
-# Vérifier les logs
-sudo tail -f /var/log/vhost-manager/error.log
-
-# Relancer l'interface
-./start-web.sh
-```
-
-### Erreur "ModuleNotFoundError: No module named 'flask'" avec sudo
-
-```bash
-# Utiliser le script qui gère le venv
-./start-web.sh
-
-# Ou installer Flask globalement (non recommandé)
-sudo pip3 install Flask
-```
-
----
-
-## 📚 Commandes Utiles
-
-### Gestion Apache
-
-```bash
-# Lister tous les sites Apache actifs
-sudo a2query -s
-
-# Désactiver un site
-sudo a2dissite monsite.com
-
-# Activer un site
-sudo a2ensite monsite.com
-
-# Recharger Apache (sans interruption)
-sudo systemctl reload apache2
-
-# Redémarrer Apache
-sudo systemctl restart apache2
-
-# Voir le statut d'Apache
-sudo systemctl status apache2
-
-# Tester la configuration Apache
-sudo apache2ctl configtest
-
-# Voir les Virtual Hosts configurés
-sudo apache2ctl -S
-```
-
-### Gestion de l'interface web
-
-```bash
-# Démarrer en mode développement
-./start-web.sh
-
-# Démarrer en mode production
-./start-production.sh
-
-# Installer comme service systemd
-sudo cp vhost-manager-web.service /etc/systemd/system/
-sudo systemctl daemon-reload
-sudo systemctl enable vhost-manager-web
-sudo systemctl start vhost-manager-web
-
-# Voir le statut du service
-sudo systemctl status vhost-manager-web
-
-# Voir les logs du service
-sudo journalctl -u vhost-manager-web -f
-```
-
-### Gestion SSL
-
-```bash
-# Lister tous les certificats
-sudo certbot certificates
-
-# Tester le renouvellement (test à blanc)
-sudo certbot renew --dry-run
-
-# Forcer le renouvellement
-sudo certbot renew --force-renewal
-
-# Révoquer un certificat
-sudo certbot revoke --cert-path /etc/letsencrypt/live/monsite.com/cert.pem
-```
-
----
-
-## 🔐 Sécurité
-
-### Bonnes pratiques incluses
+### 🔐 Sécurité
 
 - ✅ **HTTPS forcé** : Redirection automatique HTTP → HTTPS
 - ✅ **HSTS activé** : Protection contre les attaques de rétrogradation
-- ✅ **En-têtes de sécurité** : Protection XSS et clickjacking
-- ✅ **Logs séparés** : Surveillance par domaine
+- ✅ **En-têtes de sécurité** : X-Frame-Options, X-Content-Type-Options, etc.
+- ✅ **Authentification** : Accès protégé à l'interface web
 - ✅ **Certificats valides** : Let's Encrypt reconnu par tous les navigateurs
-- ✅ **Authentification web** : Accès protégé à l'interface
-- ✅ **Mode production** : Logs silencieux, debug désactivé
 
-### Configuration du pare-feu
-
-```bash
-# Avec UFW (Ubuntu)
-sudo ufw allow 'Apache Full'
-sudo ufw allow ssh
-sudo ufw allow 5000/tcp  # Interface web (si accès externe)
-sudo ufw enable
-
-# Avec iptables
-sudo iptables -A INPUT -p tcp --dport 80 -j ACCEPT
-sudo iptables -A INPUT -p tcp --dport 443 -j ACCEPT
-sudo iptables -A INPUT -p tcp --dport 5000 -j ACCEPT
-```
-
-### Sécuriser l'interface web en production
-
-```bash
-# 1. Changer les identifiants par défaut
-nano .env.production
-# SECRET_KEY=<clé_générée>
-# ADMIN_USERNAME=votre_admin
-# ADMIN_PASSWORD=MotDePasseFort123!
-
-# 2. Créer un reverse proxy pour l'interface elle-même
-sudo python3 manage.py create admin.votredomaine.com 5000
-
-# 3. Limiter l'accès par IP (dans Apache)
-# Ajouter dans /etc/apache2/sites-available/admin.votredomaine.com.conf :
-<Location />
-    Require ip 192.168.1.0/24
-    Require ip 10.0.0.0/8
-</Location>
-```
-
-📚 **Guide complet :** [PRODUCTION.md](PRODUCTION.md)
-
----
-
-## 🔄 Renouvellement Automatique des Certificats
-
-Le script de configuration SSL configure le renouvellement automatique via :
-- **Timer systemd** (Ubuntu 20.04+)
-- **Tâche cron** (solution de secours)
-
-Les certificats sont renouvelés automatiquement tous les 90 jours.
-
-Vérification manuelle :
-
-```bash
-# Tester le renouvellement (test à blanc)
-sudo certbot renew --dry-run
-
-# Forcer le renouvellement
-sudo certbot renew --force-renewal
-
-# Via l'interface web
-# → SSL → Voir les dates d'expiration
-```
-
----
-
-## 📊 Surveillance et Maintenance
-
-### Vérifier le statut des sites
-
-**Via l'interface web :**
-- Dashboard : Vue d'ensemble
-- Monitoring : Statut en temps réel
-- SSL : Vérification des certificats
-
-**Via CLI :**
-```bash
-# Vérifier tous les sites gérés
-python3 manage.py status
-
-# Vérifier les Virtual Hosts Apache
-sudo apache2ctl -S
-
-# Vérifier l'expiration des certificats SSL
-python3 manage.py check-ssl
-```
-
-### Surveillance des logs
-
-```bash
-# Surveiller tous les logs Apache
-sudo tail -f /var/log/apache2/*.log
-
-# Surveiller un domaine spécifique
-sudo tail -f /var/log/apache2/monsite.com-*.log
-
-# Surveiller l'interface web
-sudo tail -f /var/log/vhost-manager/access.log
-
-# Vérifier les erreurs SSL/TLS
-sudo grep -i ssl /var/log/apache2/error.log
-```
-
----
-
-## 🚀 Déploiement en Production
-
-### Installation sur un serveur
-
-```bash
-# 1. Cloner sur le serveur
-cd /opt
-sudo git clone https://github.com/Noubissie237/reverse-proxy.git
-cd reverse-proxy
-
-# 2. Installer les dépendances
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-
-# 3. Configurer la sécurité
-cp .env.example .env.production
-nano .env.production  # Modifier SECRET_KEY et ADMIN_PASSWORD
-
-# 4. Installer le service systemd
-sudo cp vhost-manager-web.service /etc/systemd/system/
-sudo systemctl daemon-reload
-sudo systemctl enable vhost-manager-web
-sudo systemctl start vhost-manager-web
-
-# 5. Créer un reverse proxy pour l'interface
-sudo python3 manage.py create admin.votredomaine.com 5000
-```
-
-📚 **Guide complet :** [PRODUCTION.md](PRODUCTION.md)
-
----
-
-## 🧪 Tests
-
-```bash
-# Installer les dépendances de test
-pip install pytest pytest-cov
-
-# Lancer les tests
-pytest
-
-# Avec couverture
-pytest --cov=vhost_manager tests/
-
-# Tests spécifiques
-pytest tests/test_validation.py
-```
-
----
-
-## 📞 Support et Contribution
-
-### Obtenir de l'aide
+### 📞 Support
 
 - 📖 **Documentation** : Voir les fichiers `.md` dans le projet
 - 🐛 **Bugs** : [GitHub Issues](https://github.com/Noubissie237/reverse-proxy/issues)
 - 💬 **Discussions** : [GitHub Discussions](https://github.com/Noubissie237/reverse-proxy/discussions)
 
-### Contribuer
+### 📄 Licence
 
-Les contributions sont les bienvenues ! Pour contribuer :
-
-1. Fork le projet
-2. Créer une branche (`git checkout -b feature/AmazingFeature`)
-3. Commit vos changements (`git commit -m 'Add some AmazingFeature'`)
-4. Push vers la branche (`git push origin feature/AmazingFeature`)
-5. Ouvrir une Pull Request
+Ce projet est sous licence MIT. Voir [LICENSE](LICENSE) pour plus de détails.
 
 ---
 
-## 📄 Licence
+<a name="english"></a>
+## 🇬🇧 English Version
 
-Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
+**Automated Apache Virtual Host Manager with Modern Web Interface**
 
----
+Manage your Apache Virtual Hosts with just a few clicks using an intuitive web interface. Automatic SSL/HTTPS, real-time monitoring, and much more.
 
-## 🙏 Remerciements
+### ✨ Features
 
-- [Let's Encrypt](https://letsencrypt.org/) pour les certificats SSL gratuits
-- [Apache HTTP Server](https://httpd.apache.org/) pour le serveur web
-- [Flask](https://flask.palletsprojects.com/) pour le framework web
-- [TailwindCSS](https://tailwindcss.com/) pour le design de l'interface
-- La communauté open source
+- 🖥️ **Modern Web Interface**: Manage everything from your browser
+- 📊 **Intuitive Dashboard**: Overview with real-time statistics
+- 🌐 **Visual Management**: Create, list, delete sites with a few clicks
+- 🔒 **Automatic SSL**: Free and automatic Let's Encrypt certificates
+- 📈 **Live Monitoring**: Apache status, ports, SSL with auto-refresh
+- 🔐 **Secure**: Authentication, forced HTTPS, security headers
+- 🎨 **Responsive Design**: Modern interface with TailwindCSS
+- ⚡ **Wildcard Certificates**: Support `*.example.com` for all subdomains
+- 📝 **Separate Logs**: One log file per domain
+- 🔄 **Auto Renewal**: SSL certificates renewed automatically
 
----
+### 📋 Prerequisites
 
-## 📚 Documentation Complète
+- **Linux Server** (Ubuntu/Debian 20.04+ recommended)
+- **Apache2** installed and configured
+- **Python 3.9+** with pip
+- **Sudo privileges**
+- **Configured DNS** (A record pointing to your server)
+- **Ports 80 and 443 open** in firewall
 
-- 📖 [Guide de Production](PRODUCTION.md) - Déploiement en production
-- 🌐 [Interface Web](web/README.md) - Documentation de l'interface
-- 🔒 [Certificats Wildcard](WILDCARD_SSL_GUIDE.md) - Guide des certificats wildcard
-- 📦 [Package vhost_manager](vhost_manager/README.md) - Documentation du package
+### 🚀 Installation
 
----
-
-## 🎯 Roadmap
-
-- [ ] API REST complète
-- [ ] Authentification multi-utilisateurs
-- [ ] Notifications par email
-- [ ] Intégration Cloudflare
-- [ ] Support Nginx
-- [ ] Dashboard avec graphiques (Chart.js)
-- [ ] Logs en direct dans l'interface
-- [ ] Export/Import de configurations
-- [ ] Mode sombre
-- [ ] Application mobile
-
----
-
-**💡 Pro Tip:** Ajoutez ces alias à votre `.bashrc` pour un accès rapide :
+#### 1. Clone the repository
 
 ```bash
-alias vhost='sudo python3 /opt/reverse-proxy/manage.py'
-alias vhost-web='cd /opt/reverse-proxy && ./start-web.sh'
-alias check-dns='python3 /opt/reverse-proxy/check_dns.py'
+git clone https://github.com/Noubissie237/reverse-proxy.git
+cd reverse-proxy
 ```
 
-Puis utilisez simplement :
+#### 2. Install dependencies
+
 ```bash
-vhost create monsite.com 8080
-vhost list
-vhost status
-check-dns monsite.com
+# Create virtual environment
+python3 -m venv venv
+source venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
 ```
+
+#### 3. Initial SSL configuration
+
+```bash
+# Make scripts executable
+chmod +x setup_ssl.sh start-web.sh start-production.sh
+
+# Install Certbot and configure auto-renewal
+sudo ./setup_ssl.sh
+```
+
+### 🎯 Usage
+
+#### Start the web interface
+
+**Development mode:**
+```bash
+./start-web.sh
+```
+
+**Production mode:**
+```bash
+# Configure security
+cp .env.example .env.production
+nano .env.production  # Edit SECRET_KEY and ADMIN_PASSWORD
+
+# Launch
+./start-production.sh
+```
+
+#### Access the interface
+
+1. **Open browser**: `http://localhost:5000`
+2. **Login**:
+   - Username: `admin`
+   - Password: `admin` (⚠️ change in production!)
+
+#### Create a site
+
+1. **Start your application** (e.g., on port 8080)
+2. **In the web interface**:
+   - Click **"Sites"** → **"New site"**
+   - **Domain**: `mysite.com`
+   - **Port**: `8080`
+   - **SSL**: ✅ Check to enable HTTPS
+   - Click **"Create site"**
+3. **Test**: Open `https://mysite.com`
+
+**Result:**
+- ✅ `http://mysite.com` → redirects to `https://mysite.com`
+- ✅ `https://mysite.com` → proxies to your app on `localhost:8080`
+- ✅ Valid and automatic SSL certificate
+
+#### Interface features
+
+| Page | Description |
+|------|-------------|
+| **Dashboard** | Overview: number of sites, SSL alerts, statistics |
+| **Sites** | List of all your sites with status (active/inactive) |
+| **New site** | Creation form: domain + port + SSL |
+| **Monitoring** | Real-time status: Apache, services, SSL (auto-refresh 30s) |
+| **SSL Check** | Certificate verification and expiration dates |
+
+### 📖 Examples
+
+#### Example 1: E-commerce site
+
+```bash
+# 1. Start your Node.js app
+npm start  # Listening on port 3000
+
+# 2. Open interface: http://localhost:5000
+# 3. Create site:
+#    - Domain: shop.com
+#    - Port: 3000
+#    - SSL: ✅
+```
+
+#### Example 2: Backend API
+
+```bash
+# 1. Start your Python API
+python api.py  # Listening on port 8080
+
+# 2. In web interface:
+#    - Domain: api.myapp.com
+#    - Port: 8080
+#    - SSL: ✅
+```
+
+#### Example 3: Wildcard Certificate
+
+To manage multiple subdomains with a single certificate:
+
+```bash
+# Via CLI (requires manual DNS validation)
+sudo python3 manage.py install-wildcard-ssl '*.example.com'
+
+# Then create sites in web interface:
+# - api.example.com → port 8080
+# - app.example.com → port 3000
+# - admin.example.com → port 5000
+```
+
+📚 **Complete guide**: [WILDCARD_SSL_GUIDE.md](WILDCARD_SSL_GUIDE.md)
+
+### 🔧 Advanced Configuration
+
+#### Secure the web interface
+
+```bash
+# 1. Generate secret key
+python3 -c 'import secrets; print(secrets.token_hex(32))'
+
+# 2. Edit .env.production
+nano .env.production
+```
+
+```bash
+SECRET_KEY=<your_generated_key>
+ADMIN_USERNAME=your_admin
+ADMIN_PASSWORD=StrongPassword123!
+VHOST_VERBOSE=0  # Silent mode
+```
+
+#### Install as systemd service
+
+```bash
+# Copy service file
+sudo cp vhost-manager-web.service /etc/systemd/system/
+
+# Enable and start
+sudo systemctl daemon-reload
+sudo systemctl enable vhost-manager-web
+sudo systemctl start vhost-manager-web
+
+# Check status
+sudo systemctl status vhost-manager-web
+```
+
+#### Create reverse proxy for the interface
+
+To access the interface via HTTPS:
+
+```bash
+# Via CLI
+sudo python3 manage.py create admin.yourdomain.com 5000
+
+# Then access via: https://admin.yourdomain.com
+```
+
+### 🛠️ Troubleshooting
+
+#### Web interface won't start
+
+```bash
+# Check logs
+sudo tail -f /var/log/vhost-manager/error.log
+
+# Restart
+./start-web.sh
+```
+
+#### Error "ModuleNotFoundError: No module named 'flask'"
+
+```bash
+# Use the script that handles venv automatically
+./start-web.sh
+
+# Or activate venv manually
+source venv/bin/activate
+python3 web/app.py
+```
+
+#### Site created but inaccessible
+
+1. **Check DNS**:
+   ```bash
+   python3 check_dns.py mysite.com
+   ```
+
+2. **Check app is running**:
+   ```bash
+   curl localhost:8080
+   ```
+
+3. **View Apache logs**:
+   ```bash
+   sudo tail -f /var/log/apache2/mysite.com-error.log
+   ```
+
+4. **Check in interface**:
+   - Monitoring → View service status
+
+#### SSL certificate not created
+
+```bash
+# Check Let's Encrypt logs
+sudo tail -f /var/log/letsencrypt/letsencrypt.log
+
+# Check DNS points to your server
+python3 check_dns.py mysite.com
+
+# Check ports
+sudo ufw status
+```
+
+### 📚 Complete Documentation
+
+- 📖 [Production Guide](PRODUCTION.md) - Production deployment
+- 🌐 [Web Interface](web/README.md) - Interface documentation
+- 🔒 [Wildcard Certificates](WILDCARD_SSL_GUIDE.md) - Wildcard SSL guide
+- 📦 [vhost_manager Package](vhost_manager/README.md) - Package documentation
+
+### 🔐 Security
+
+- ✅ **Forced HTTPS**: Automatic HTTP → HTTPS redirection
+- ✅ **HSTS enabled**: Protection against downgrade attacks
+- ✅ **Security headers**: X-Frame-Options, X-Content-Type-Options, etc.
+- ✅ **Authentication**: Protected access to web interface
+- ✅ **Valid certificates**: Let's Encrypt recognized by all browsers
+
+### 📞 Support
+
+- 📖 **Documentation**: See `.md` files in the project
+- 🐛 **Bugs**: [GitHub Issues](https://github.com/Noubissie237/reverse-proxy/issues)
+- 💬 **Discussions**: [GitHub Discussions](https://github.com/Noubissie237/reverse-proxy/discussions)
+
+### 📄 License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
 
 ---
 
 <div align="center">
 
-**⭐ Si ce projet vous est utile, n'hésitez pas à lui donner une étoile sur GitHub ! ⭐**
+**⭐ If this project is useful to you, don't hesitate to give it a star on GitHub! ⭐**
 
 Made with ❤️ by [Noubissie237](https://github.com/Noubissie237)
 
