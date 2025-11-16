@@ -77,6 +77,10 @@ def logout():
 @login_required
 def dashboard():
     """Main dashboard"""
+    # Recharger la configuration pour avoir les données à jour
+    manager.config_manager.load_config()
+    manager.sites = manager.config_manager.sites
+    
     sites = manager.sites
     
     # Calculate statistics
@@ -116,6 +120,10 @@ def dashboard():
 @login_required
 def sites():
     """List all sites"""
+    # Recharger la configuration pour avoir la liste à jour
+    manager.config_manager.load_config()
+    manager.sites = manager.config_manager.sites
+    
     sites_list = []
     
     for domain, config in sorted(manager.sites.items()):
@@ -199,6 +207,11 @@ def delete_site(domain):
     
     try:
         manager.delete_site(domain)
+        
+        # Recharger la configuration pour mettre à jour la liste des sites
+        manager.config_manager.load_config()
+        manager.sites = manager.config_manager.sites
+        
         flash(f'Site {domain} supprimé avec succès', 'success')
         return jsonify({'success': True})
     except Exception as e:
@@ -209,6 +222,10 @@ def delete_site(domain):
 @login_required
 def monitoring():
     """Monitoring page"""
+    # Recharger la configuration pour avoir les données à jour
+    manager.config_manager.load_config()
+    manager.sites = manager.config_manager.sites
+    
     sites_status = []
     
     for domain in sorted(manager.sites.keys()):
@@ -273,6 +290,10 @@ def api_stats():
 @login_required
 def ssl_check():
     """SSL certificates check page"""
+    # Recharger la configuration pour avoir les données à jour
+    manager.config_manager.load_config()
+    manager.sites = manager.config_manager.sites
+    
     ssl_sites = {domain: config for domain, config in manager.sites.items() 
                  if config.get('ssl', False)}
     
