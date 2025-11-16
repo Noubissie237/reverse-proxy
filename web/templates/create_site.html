@@ -27,12 +27,17 @@
                                            name="domain" 
                                            id="domain" 
                                            required
-                                           placeholder="example.com"
+                                           pattern="^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$|^\*\.([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$"
+                                           placeholder="example.com ou *.example.com"
                                            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                 </div>
                                 <p class="mt-2 text-sm text-gray-500">
                                     <i class="fas fa-info-circle mr-1"></i>
                                     Le domaine doit pointer vers ce serveur (enregistrement DNS A)
+                                </p>
+                                <p id="domain-error" class="mt-1 text-sm text-red-600 hidden">
+                                    <i class="fas fa-exclamation-circle mr-1"></i>
+                                    <span id="domain-error-message"></span>
                                 </p>
                             </div>
 
@@ -48,12 +53,17 @@
                                            required
                                            min="1"
                                            max="65535"
+                                           step="1"
                                            placeholder="8080"
                                            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                 </div>
                                 <p class="mt-2 text-sm text-gray-500">
                                     <i class="fas fa-info-circle mr-1"></i>
                                     Port sur lequel votre application écoute (ex: 3000, 8080, 5000)
+                                </p>
+                                <p id="port-error" class="mt-1 text-sm text-red-600 hidden">
+                                    <i class="fas fa-exclamation-circle mr-1"></i>
+                                    <span id="port-error-message"></span>
                                 </p>
                             </div>
 
@@ -114,4 +124,167 @@
         </div>
     </main>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const domainInput = document.getElementById('domain');
+    const portInput = document.getElementById('port');
+    const domainError = document.getElementById('domain-error');
+    const domainErrorMessage = document.getElementById('domain-error-message');
+    const portError = document.getElementById('port-error');
+    const portErrorMessage = document.getElementById('port-error-message');
+    const form = document.querySelector('form');
+    
+    // Validation du domaine
+    function validateDomain(domain) {
+        if (!domain) {
+            return { valid: false, message: 'Le nom de domaine est requis' };
+        }
+        
+        // Vérifier la longueur
+        if (domain.length > 253) {
+            return { valid: false, message: 'Le nom de domaine est trop long (max 253 caractères)' };
+        }
+        
+        // Pattern pour domaine normal ou wildcard
+        const domainPattern = /^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/;
+        const wildcardPattern = /^\*\.([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/;
+        
+        if (!domainPattern.test(domain) && !wildcardPattern.test(domain)) {
+            return { valid: false, message: 'Format de domaine invalide (ex: example.com ou *.example.com)' };
+        }
+        
+        // Vérifier les caractères interdits
+        if (domain.includes('..') || domain.startsWith('.') || domain.endsWith('.')) {
+            return { valid: false, message: 'Le domaine ne peut pas contenir de points consécutifs' };
+        }
+        
+        // Vérifier localhost et IP
+        if (domain.includes('localhost') || /^\d+\.\d+\.\d+\.\d+$/.test(domain)) {
+            return { valid: false, message: 'Utilisez un nom de domaine, pas localhost ou une IP' };
+        }
+        
+        return { valid: true };
+    }
+    
+    // Validation du port
+    function validatePort(port) {
+        if (!port) {
+            return { valid: false, message: 'Le port est requis' };
+        }
+        
+        const portNum = parseInt(port);
+        
+        if (isNaN(portNum)) {
+            return { valid: false, message: 'Le port doit être un nombre' };
+        }
+        
+        if (portNum < 1 || portNum > 65535) {
+            return { valid: false, message: 'Le port doit être entre 1 et 65535' };
+        }
+        
+        // Ports réservés (avertissement)
+        const reservedPorts = [80, 443, 22, 21, 25, 53, 110, 143, 3306, 5432];
+        if (reservedPorts.includes(portNum)) {
+            return { 
+                valid: true, 
+                warning: true,
+                message: `Attention : Le port ${portNum} est généralement réservé pour d'autres services` 
+            };
+        }
+        
+        return { valid: true };
+    }
+    
+    // Afficher/masquer les erreurs
+    function showError(errorElement, messageElement, message) {
+        errorElement.classList.remove('hidden');
+        messageElement.textContent = message;
+    }
+    
+    function hideError(errorElement) {
+        errorElement.classList.add('hidden');
+    }
+    
+    // Validation en temps réel du domaine
+    domainInput.addEventListener('input', function() {
+        const result = validateDomain(this.value.trim());
+        
+        if (!result.valid) {
+            showError(domainError, domainErrorMessage, result.message);
+            this.setCustomValidity(result.message);
+        } else {
+            hideError(domainError);
+            this.setCustomValidity('');
+        }
+    });
+    
+    // Validation en temps réel du port
+    portInput.addEventListener('input', function() {
+        const result = validatePort(this.value);
+        
+        if (!result.valid) {
+            showError(portError, portErrorMessage, result.message);
+            this.setCustomValidity(result.message);
+        } else {
+            hideError(portError);
+            this.setCustomValidity('');
+            
+            // Afficher l'avertissement pour les ports réservés
+            if (result.warning) {
+                portError.classList.remove('text-red-600');
+                portError.classList.add('text-yellow-600');
+                showError(portError, portErrorMessage, result.message);
+            }
+        }
+    });
+    
+    // Validation avant soumission
+    form.addEventListener('submit', function(e) {
+        const domainResult = validateDomain(domainInput.value.trim());
+        const portResult = validatePort(portInput.value);
+        
+        let hasError = false;
+        
+        if (!domainResult.valid) {
+            showError(domainError, domainErrorMessage, domainResult.message);
+            hasError = true;
+        }
+        
+        if (!portResult.valid) {
+            showError(portError, portErrorMessage, portResult.message);
+            hasError = true;
+        }
+        
+        if (hasError) {
+            e.preventDefault();
+            return false;
+        }
+        
+        // Confirmation pour les ports réservés
+        if (portResult.warning) {
+            if (!confirm(portResult.message + '\n\nVoulez-vous continuer ?')) {
+                e.preventDefault();
+                return false;
+            }
+        }
+        
+        // Confirmation finale
+        const domain = domainInput.value.trim();
+        const port = portInput.value;
+        const ssl = document.getElementById('ssl').checked;
+        
+        const message = `Créer le site :\n\n` +
+                       `Domaine : ${domain}\n` +
+                       `Port : ${port}\n` +
+                       `SSL : ${ssl ? 'Oui' : 'Non'}\n\n` +
+                       `Confirmer ?`;
+        
+        if (!confirm(message)) {
+            e.preventDefault();
+            return false;
+        }
+    });
+});
+</script>
 {% endblock %}
